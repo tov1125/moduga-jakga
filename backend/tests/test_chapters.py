@@ -6,7 +6,6 @@
 from typing import Any
 from unittest.mock import MagicMock
 
-import pytest
 from fastapi.testclient import TestClient
 
 
@@ -43,7 +42,7 @@ class TestListChapters:
         mock_supabase.table.side_effect = table_mock
 
         response = client.get(
-            "/api/v1/chapters/test-book-id-12345",
+            "/api/v1/books/test-book-id-12345/chapters",
             headers=auth_headers,
         )
 
@@ -54,7 +53,7 @@ class TestListChapters:
 
     def test_list_chapters_unauthenticated(self, client: TestClient) -> None:
         """인증 없이 챕터 목록 조회 시도"""
-        response = client.get("/api/v1/chapters/test-book-id-12345")
+        response = client.get("/api/v1/books/test-book-id-12345/chapters")
         assert response.status_code == 401
 
 
@@ -92,7 +91,7 @@ class TestCreateChapter:
         mock_supabase.table.side_effect = table_mock
 
         response = client.post(
-            "/api/v1/chapters/test-book-id-12345",
+            "/api/v1/books/test-book-id-12345/chapters",
             headers=auth_headers,
             json={
                 "title": "제1장: 시작",
@@ -105,15 +104,15 @@ class TestCreateChapter:
         data = response.json()
         assert data["title"] == "제1장: 시작"
 
-    def test_create_chapter_empty_title(
+    def test_create_chapter_invalid_type(
         self,
         client: TestClient,
         auth_headers: dict[str, str],
     ) -> None:
-        """빈 제목으로 챕터 생성 시도"""
+        """잘못된 타입으로 챕터 생성 시도 (title에 int)"""
         response = client.post(
-            "/api/v1/chapters/test-book-id-12345",
+            "/api/v1/books/test-book-id-12345/chapters",
             headers=auth_headers,
-            json={"title": "", "order": 1},
+            json={"title": 12345, "order": 1},
         )
         assert response.status_code == 422

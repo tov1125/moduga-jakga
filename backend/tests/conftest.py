@@ -1,10 +1,12 @@
 """
 테스트 픽스처 모듈
 테스트에 사용되는 공통 픽스처(클라이언트, 모의 객체 등)를 정의합니다.
+
+FastAPI dependency_overrides를 사용하여 의존성을 교체합니다.
 """
 
-from typing import Any, AsyncGenerator, Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from typing import Any, Generator
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -153,35 +155,43 @@ def client(
     mock_supabase: MagicMock,
     sample_user: dict[str, Any],
 ) -> Generator[TestClient, None, None]:
-    """FastAPI 테스트 클라이언트"""
-    with (
-        patch("app.core.config.get_settings", return_value=mock_settings),
-        patch("app.core.database._create_supabase_client", return_value=mock_supabase),
-    ):
-        # 사용자 인증 모의 - 프로필 조회 시 샘플 사용자 반환
-        profile_query = MagicMock()
-        profile_query.select.return_value = profile_query
-        profile_query.eq.return_value = profile_query
-        profile_query.execute.return_value = MagicMock(data=[sample_user])
+    """FastAPI 테스트 클라이언트 (dependency_overrides 사용)"""
+    from app.core.config import get_settings
+    from app.core.database import get_supabase
+    from app.main import app
 
-        def mock_table(name: str) -> MagicMock:
-            if name == "profiles":
-                return profile_query
-            # 기본 테이블 모의
-            default = MagicMock()
-            default.select.return_value = default
-            default.insert.return_value = default
-            default.update.return_value = default
-            default.delete.return_value = default
-            default.eq.return_value = default
-            default.order.return_value = default
-            default.limit.return_value = default
-            default.execute.return_value = MagicMock(data=[], count=0)
-            return default
+    # FastAPI 표준 방식: dependency_overrides로 의존성 교체
+    app.dependency_overrides[get_settings] = lambda: mock_settings
 
-        mock_supabase.table.side_effect = mock_table
+    def override_get_supabase():
+        yield mock_supabase
 
-        from app.main import app
+    app.dependency_overrides[get_supabase] = override_get_supabase
 
-        with TestClient(app) as test_client:
-            yield test_client
+    # mock_supabase 기본 동작 설정 - profiles 테이블은 JWT 인증에 필요
+    profile_query = MagicMock()
+    profile_query.select.return_value = profile_query
+    profile_query.eq.return_value = profile_query
+    profile_query.execute.return_value = MagicMock(data=[sample_user])
+
+    def mock_table(name: str) -> MagicMock:
+        if name == "profiles":
+            return profile_query
+        # 기본 테이블 모의
+        default = MagicMock()
+        default.select.return_value = default
+        default.insert.return_value = default
+        default.update.return_value = default
+        default.delete.return_value = default
+        default.eq.return_value = default
+        default.order.return_value = default
+        default.limit.return_value = default
+        default.execute.return_value = MagicMock(data=[], count=0)
+        return default
+
+    mock_supabase.table.side_effect = mock_table
+
+    with TestClient(app) as test_client:
+        yield test_client
+
+    app.dependency_overrides.clear()

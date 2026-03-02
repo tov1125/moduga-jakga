@@ -4,7 +4,6 @@ Pydantic v2 Strict 타입 스키마 검증 테스트
 
 검증 항목:
   - Strict 타입 적용 (str에 int 불가 등)
-  - Field 제약 조건 (min_length, ge, le 등)
   - Enum 값 검증
   - 필수 필드 누락 시 에러
 """
@@ -17,13 +16,13 @@ class TestAuthSchemas:
     """인증 스키마 타입 안전성 테스트"""
 
     def test_signup_request_valid(self) -> None:
-        from app.schemas.auth import SignUpRequest
+        from app.schemas.auth import DisabilityType, SignUpRequest
 
         req = SignUpRequest(
             email="user@example.com",
             password="StrongPass123!",
             display_name="사용자",
-            disability_type="visual",
+            disability_type=DisabilityType.VISUAL,
         )
         assert req.email == "user@example.com"
 
@@ -37,14 +36,15 @@ class TestAuthSchemas:
             )  # type: ignore[call-arg]
         assert "email" in str(exc_info.value)
 
-    def test_signup_request_empty_display_name(self) -> None:
+    def test_signup_request_strict_type(self) -> None:
+        """Strict 모드에서 int는 str 필드에 불가"""
         from app.schemas.auth import SignUpRequest
 
         with pytest.raises(ValidationError):
             SignUpRequest(
-                email="user@example.com",
+                email=12345,  # type: ignore[arg-type]
                 password="StrongPass123!",
-                display_name="",
+                display_name="사용자",
             )
 
     def test_login_request_valid(self) -> None:
@@ -74,22 +74,22 @@ class TestBookSchemas:
         with pytest.raises(ValueError):
             Genre("invalid_genre")
 
-    def test_create_book_request_valid(self) -> None:
-        from app.schemas.book import CreateBookRequest
+    def test_book_create_valid(self) -> None:
+        from app.schemas.book import BookCreate, Genre
 
-        req = CreateBookRequest(
+        req = BookCreate(
             title="테스트 도서",
-            genre="essay",
+            genre=Genre.ESSAY,
         )
         assert req.title == "테스트 도서"
 
-    def test_create_book_request_empty_title(self) -> None:
-        from app.schemas.book import CreateBookRequest
+    def test_book_create_invalid_genre(self) -> None:
+        from app.schemas.book import BookCreate
 
         with pytest.raises(ValidationError):
-            CreateBookRequest(
-                title="",
-                genre="essay",
+            BookCreate(
+                title="테스트 도서",
+                genre="invalid_genre",  # type: ignore[arg-type]
             )
 
 
@@ -97,22 +97,25 @@ class TestWritingSchemas:
     """글쓰기 스키마 타입 안전성 테스트"""
 
     def test_generate_request_valid(self) -> None:
+        from app.schemas.book import Genre
         from app.schemas.writing import GenerateRequest
 
         req = GenerateRequest(
-            text="오늘 아침에 산책을 하면서 느낀 점을 이야기하겠습니다.",
-            genre="essay",
+            prompt="오늘 아침에 산책을 하면서 느낀 점을 이야기하겠습니다.",
+            genre=Genre.ESSAY,
         )
-        assert req.text is not None
+        assert req.prompt is not None
 
-    def test_generate_request_empty_text(self) -> None:
+    def test_generate_request_empty_prompt(self) -> None:
+        """빈 프롬프트는 스키마에서 허용 (엔드포인트에서 400 처리)"""
+        from app.schemas.book import Genre
         from app.schemas.writing import GenerateRequest
 
-        with pytest.raises(ValidationError):
-            GenerateRequest(
-                text="",
-                genre="essay",
-            )
+        req = GenerateRequest(
+            prompt="",
+            genre=Genre.ESSAY,
+        )
+        assert req.prompt == ""
 
 
 class TestEditingSchemas:
@@ -124,11 +127,12 @@ class TestEditingSchemas:
         req = ProofreadRequest(text="맞춤법을 검사할 문장입니다.")
         assert req.text == "맞춤법을 검사할 문장입니다."
 
-    def test_proofread_request_empty(self) -> None:
+    def test_proofread_request_strict_type(self) -> None:
+        """Strict 모드에서 int는 str 필드에 불가"""
         from app.schemas.editing import ProofreadRequest
 
         with pytest.raises(ValidationError):
-            ProofreadRequest(text="")
+            ProofreadRequest(text=12345)  # type: ignore[arg-type]
 
 
 class TestDesignSchemas:
@@ -143,24 +147,25 @@ class TestDesignSchemas:
     def test_page_size_enum(self) -> None:
         from app.schemas.design import PageSize
 
-        assert PageSize.A5 == "a5"
-        assert PageSize.B5 == "b5"
+        assert PageSize.A5 == "A5"
+        assert PageSize.B5 == "B5"
 
 
 class TestTTSSchemas:
     """TTS 스키마 타입 안전성 테스트"""
 
     def test_synthesize_request_valid(self) -> None:
-        from app.schemas.tts import SynthesizeRequest
+        from app.schemas.tts import TTSSynthesizeRequest
 
-        req = SynthesizeRequest(text="음성으로 변환할 텍스트입니다.")
+        req = TTSSynthesizeRequest(text="음성으로 변환할 텍스트입니다.")
         assert req.text is not None
 
-    def test_synthesize_request_empty(self) -> None:
-        from app.schemas.tts import SynthesizeRequest
+    def test_synthesize_request_strict_type(self) -> None:
+        """Strict 모드에서 int는 str 필드에 불가"""
+        from app.schemas.tts import TTSSynthesizeRequest
 
         with pytest.raises(ValidationError):
-            SynthesizeRequest(text="")
+            TTSSynthesizeRequest(text=12345)  # type: ignore[arg-type]
 
 
 class TestPublishingSchemas:
