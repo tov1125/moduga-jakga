@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Default large font size for accessibility */
+  html {
+    font-size: 18px;
+    scroll-behavior: smooth;
+  }
+
+  /* High contrast text */
+  body {
+    @apply text-gray-900 bg-white;
+    @apply dark:text-gray-100 dark:bg-gray-950;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Strong focus visible indicator */
+  *:focus-visible {
+    @apply outline-none ring-4 ring-yellow-400 ring-offset-2;
+    @apply dark:ring-yellow-300 dark:ring-offset-gray-950;
+  }
+
+  /* Remove default focus for mouse users */
+  *:focus:not(:focus-visible) {
+    @apply outline-none ring-0;
+  }
+
+  /* Heading hierarchy */
+  h1 {
+    @apply text-4xl font-bold leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-bold leading-snug;
+  }
+
+  h3 {
+    @apply text-xl font-semibold leading-snug;
+  }
+
+  /* Link styling */
+  a {
+    @apply text-primary-600 dark:text-primary-400;
+    @apply underline decoration-1 underline-offset-2;
+    @apply hover:decoration-2;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+    @apply dark:bg-primary-800 dark:text-primary-100;
+  }
+}
+
+@layer components {
+  /* Skip link (hidden until focused) */
+  .skip-link {
+    @apply sr-only;
+  }
+
+  .skip-link:focus {
+    @apply not-sr-only fixed top-4 left-4 z-[9999];
+    @apply bg-primary-700 text-white;
+    @apply px-6 py-3 rounded-lg;
+    @apply text-lg font-bold;
+    @apply shadow-lg;
+  }
+}
+
+@layer utilities {
+  /* Screen reader only (visually hidden but accessible) */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
