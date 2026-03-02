@@ -43,7 +43,7 @@ export function EditingPanel({
   onRunAnalysis,
   className = "",
 }: EditingPanelProps) {
-  const { announcePolite, announceAssertive } = useAnnouncer();
+  const { announcePolite } = useAnnouncer();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleStageChange = useCallback(

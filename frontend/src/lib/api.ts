@@ -40,7 +40,7 @@ async function apiFetch<T>(
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...customHeaders,
+    ...(customHeaders as Record<string, string>),
   };
 
   if (token) {
