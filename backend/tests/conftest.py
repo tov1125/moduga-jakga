@@ -46,6 +46,7 @@ def mock_supabase() -> MagicMock:
     table_mock.eq.return_value = table_mock
     table_mock.order.return_value = table_mock
     table_mock.limit.return_value = table_mock
+    table_mock.range.return_value = table_mock
     table_mock.execute.return_value = MagicMock(data=[], count=0)
 
     client.table.return_value = table_mock
@@ -186,6 +187,7 @@ def client(
         default.eq.return_value = default
         default.order.return_value = default
         default.limit.return_value = default
+        default.range.return_value = default
         default.execute.return_value = MagicMock(data=[], count=0)
         return default
 

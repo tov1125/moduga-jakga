@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import StrictInt, StrictStr
+from pydantic import Field, StrictBool, StrictInt, StrictStr
 
 from app.schemas.base import StrictBaseModel
 
@@ -33,18 +33,18 @@ class BookStatus(str, Enum):
 
 class BookCreate(StrictBaseModel):
     """도서 생성 요청 스키마"""
-    title: StrictStr
+    title: StrictStr = Field(..., min_length=1, max_length=200)
     genre: Genre
-    description: StrictStr = ""
-    target_audience: StrictStr = ""
+    description: StrictStr = Field(default="", max_length=2000)
+    target_audience: StrictStr = Field(default="", max_length=200)
 
 
 class BookUpdate(StrictBaseModel):
     """도서 수정 요청 스키마"""
-    title: StrictStr | None = None
+    title: StrictStr | None = Field(default=None, min_length=1, max_length=200)
     genre: Genre | None = None
-    description: StrictStr | None = None
-    target_audience: StrictStr | None = None
+    description: StrictStr | None = Field(default=None, max_length=2000)
+    target_audience: StrictStr | None = Field(default=None, max_length=200)
     status: BookStatus | None = None
 
 
@@ -64,6 +64,10 @@ class BookResponse(StrictBaseModel):
 
 
 class BookListResponse(StrictBaseModel):
-    """도서 목록 응답 스키마"""
-    books: list[BookResponse]
+    """도서 목록 응답 스키마 (페이지네이션 포함)"""
+    success: StrictBool = True
+    data: list[BookResponse]
     total: StrictInt
+    page: StrictInt
+    page_size: StrictInt
+    total_pages: StrictInt

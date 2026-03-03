@@ -46,12 +46,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || "",
-          displayName: supabaseUser.user_metadata?.display_name || "",
-          disabilityType: supabaseUser.user_metadata?.disability_type || "none",
-          voiceSpeed: supabaseUser.user_metadata?.voice_speed || 1.0,
-          voiceType: supabaseUser.user_metadata?.voice_type || "default",
-          createdAt: supabaseUser.created_at,
-          updatedAt: supabaseUser.updated_at || supabaseUser.created_at,
+          display_name: supabaseUser.user_metadata?.display_name || "",
+          disability_type: supabaseUser.user_metadata?.disability_type || "none",
+          voice_speed: supabaseUser.user_metadata?.voice_speed || 1.0,
+          voice_type: supabaseUser.user_metadata?.voice_type || "default",
+          is_active: true,
+          created_at: supabaseUser.created_at,
+          updated_at: supabaseUser.updated_at || null,
         });
       } else {
         setUser(null);
@@ -75,12 +76,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || "",
-          displayName: supabaseUser.user_metadata?.display_name || "",
-          disabilityType: supabaseUser.user_metadata?.disability_type || "none",
-          voiceSpeed: supabaseUser.user_metadata?.voice_speed || 1.0,
-          voiceType: supabaseUser.user_metadata?.voice_type || "default",
-          createdAt: supabaseUser.created_at,
-          updatedAt: supabaseUser.updated_at || supabaseUser.created_at,
+          display_name: supabaseUser.user_metadata?.display_name || "",
+          disability_type: supabaseUser.user_metadata?.disability_type || "none",
+          voice_speed: supabaseUser.user_metadata?.voice_speed || 1.0,
+          voice_type: supabaseUser.user_metadata?.voice_type || "default",
+          is_active: true,
+          created_at: supabaseUser.created_at,
+          updated_at: supabaseUser.updated_at || null,
         });
       } else {
         setUser(null);

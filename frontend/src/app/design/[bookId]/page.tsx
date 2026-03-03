@@ -42,11 +42,11 @@ export default function DesignPage() {
   const handlePreviewLayout = useCallback(async () => {
     setIsPreviewLoading(true);
     try {
-      const response = await designApi.layoutPreview(bookId, {
-        fontSize,
-        fontFamily,
+      const response = await designApi.layoutPreview({
+        book_id: bookId,
+        font_size: fontSize,
       });
-      setPreviewUrl(response.data.previewUrl);
+      setPreviewUrl(response.data.preview_url);
       announcePolite("레이아웃 미리보기가 준비되었습니다");
     } catch {
       announceAssertive("레이아웃 미리보기를 생성할 수 없습니다");
@@ -89,7 +89,7 @@ export default function DesignPage() {
         <CoverDesigner
           bookId={bookId}
           bookTitle={book?.title || ""}
-          currentCoverUrl={book?.coverImageUrl}
+          currentCoverUrl={undefined}
         />
       </section>
 

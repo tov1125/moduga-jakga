@@ -1,29 +1,29 @@
-/** Types of visual disability */
+/** Types of visual disability (synced with BE DisabilityType enum) */
 export type DisabilityType =
-  | "total_blindness"
+  | "visual"
   | "low_vision"
-  | "color_blindness"
-  | "other"
-  | "none";
+  | "none"
+  | "other";
 
-/** User profile */
+/** User profile (matches BE UserResponse — snake_case keys) */
 export interface User {
   id: string;
   email: string;
-  displayName: string;
-  disabilityType: DisabilityType;
-  voiceSpeed: number;
-  voiceType: string;
-  createdAt: string;
-  updatedAt: string;
+  display_name: string;
+  disability_type: DisabilityType;
+  voice_speed: number;
+  voice_type: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string | null;
 }
 
-/** Data required for sign up */
+/** Data required for sign up (matches BE SignUpRequest — snake_case keys) */
 export interface SignUpData {
   email: string;
   password: string;
-  displayName: string;
-  disabilityType: DisabilityType;
+  display_name: string;
+  disability_type: DisabilityType;
 }
 
 /** Data required for login */
@@ -32,10 +32,10 @@ export interface LoginData {
   password: string;
 }
 
-/** User settings update */
+/** User settings update (matches BE UserSettingsUpdate — snake_case keys) */
 export interface UserSettingsUpdate {
-  displayName?: string;
-  disabilityType?: DisabilityType;
-  voiceSpeed?: number;
-  voiceType?: string;
+  display_name?: string;
+  disability_type?: DisabilityType;
+  voice_speed?: number;
+  voice_type?: string;
 }

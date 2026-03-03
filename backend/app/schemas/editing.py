@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import StrictFloat, StrictInt, StrictStr
+from pydantic import Field, StrictBool, StrictFloat, StrictInt, StrictStr
 
 from app.schemas.base import StrictBaseModel
 
@@ -28,10 +28,10 @@ class SeverityLevel(str, Enum):
 
 class ProofreadRequest(StrictBaseModel):
     """교정 요청 스키마"""
-    text: StrictStr
-    check_spelling: bool = True         # 맞춤법 검사
-    check_grammar: bool = True          # 문법 검사
-    check_punctuation: bool = True      # 구두점 검사
+    text: StrictStr = Field(..., min_length=1)
+    check_spelling: StrictBool = True         # 맞춤법 검사
+    check_grammar: StrictBool = True          # 문법 검사
+    check_punctuation: StrictBool = True      # 구두점 검사
 
 
 class CorrectionItem(StrictBaseModel):
@@ -39,8 +39,8 @@ class CorrectionItem(StrictBaseModel):
     original: StrictStr                 # 원본 텍스트
     corrected: StrictStr                # 수정 텍스트
     reason: StrictStr                   # 수정 이유
-    position_start: StrictInt           # 시작 위치
-    position_end: StrictInt             # 끝 위치
+    position_start: StrictInt = Field(..., ge=0)  # 시작 위치
+    position_end: StrictInt = Field(..., ge=0)    # 끝 위치
     severity: SeverityLevel
 
 
@@ -49,14 +49,14 @@ class ProofreadResult(StrictBaseModel):
     corrected_text: StrictStr           # 전체 교정된 텍스트
     corrections: list[CorrectionItem]
     total_corrections: StrictInt
-    accuracy_score: StrictFloat         # 정확도 점수 (0.0 ~ 100.0)
+    accuracy_score: StrictFloat = Field(..., ge=0.0, le=100.0)  # 정확도 점수
 
 
 class StyleCheckRequest(StrictBaseModel):
     """문체 일관성 검사 요청 스키마"""
-    text: StrictStr
-    reference_style: StrictStr = ""     # 참조할 문체 샘플
-    genre: StrictStr = ""               # 장르
+    text: StrictStr = Field(..., min_length=1)
+    reference_style: StrictStr = Field(default="")  # 참조할 문체 샘플
+    genre: StrictStr = Field(default="")             # 장르
 
 
 class StyleIssue(StrictBaseModel):
@@ -70,7 +70,7 @@ class StyleIssue(StrictBaseModel):
 class StyleCheckResult(StrictBaseModel):
     """문체 일관성 검사 결과 스키마"""
     issues: list[StyleIssue]
-    consistency_score: StrictFloat      # 일관성 점수 (0.0 ~ 100.0)
+    consistency_score: StrictFloat = Field(..., ge=0.0, le=100.0)  # 일관성 점수
     overall_feedback: StrictStr         # 전체 피드백
 
 
@@ -82,8 +82,8 @@ class StructureReviewRequest(StrictBaseModel):
 
 class StructureReviewResult(StrictBaseModel):
     """구조 검토 결과 스키마"""
-    flow_score: StrictFloat             # 흐름 점수
-    organization_score: StrictFloat     # 구성 점수
+    flow_score: StrictFloat = Field(..., ge=0.0, le=100.0)          # 흐름 점수
+    organization_score: StrictFloat = Field(..., ge=0.0, le=100.0) # 구성 점수
     feedback: list[StrictStr]           # 피드백 목록
     suggestions: list[StrictStr]        # 개선 제안 목록
 
@@ -102,7 +102,7 @@ class FullReviewRequest(StrictBaseModel):
 class StageResult(StrictBaseModel):
     """개별 편집 단계 결과"""
     stage: EditingStage
-    score: StrictFloat
+    score: StrictFloat = Field(..., ge=0.0, le=100.0)
     issues_count: StrictInt
     feedback: StrictStr
 
@@ -110,7 +110,7 @@ class StageResult(StrictBaseModel):
 class QualityReport(StrictBaseModel):
     """품질 보고서 스키마"""
     book_id: StrictStr
-    overall_score: StrictFloat          # 종합 품질 점수
+    overall_score: StrictFloat = Field(..., ge=0.0, le=100.0)  # 종합 품질 점수
     stage_results: list[StageResult]
     total_issues: StrictInt
     summary: StrictStr                  # 종합 평가

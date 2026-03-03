@@ -5,7 +5,7 @@
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
 from app.api.deps import get_current_user, get_supabase
@@ -21,17 +21,25 @@ router = APIRouter()
     summary="내 도서 목록 조회",
 )
 async def list_books(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     current_user: dict[str, Any] = Depends(get_current_user),
     supabase: Client = Depends(get_supabase),
 ) -> BookListResponse:
-    """현재 사용자의 도서 목록을 반환합니다."""
+    """현재 사용자의 도서 목록을 페이지네이션으로 반환합니다."""
+    offset = (page - 1) * page_size
+
     response = (
         supabase.table(TABLE_BOOKS)
-        .select("*")
+        .select("*", count="exact")
         .eq("user_id", current_user["id"])
         .order("created_at", desc=True)
+        .range(offset, offset + page_size - 1)
         .execute()
     )
+
+    total = response.count if response.count is not None else len(response.data)
+    total_pages = max(1, (total + page_size - 1) // page_size)
 
     books = [
         BookResponse(
@@ -50,7 +58,13 @@ async def list_books(
         for book in response.data
     ]
 
-    return BookListResponse(books=books, total=len(books))
+    return BookListResponse(
+        data=books,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
 
 
 @router.post(
@@ -141,7 +155,7 @@ async def get_book(
     )
 
 
-@router.put(
+@router.patch(
     "/{book_id}",
     response_model=BookResponse,
     summary="도서 수정",

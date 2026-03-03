@@ -56,11 +56,11 @@ async def proofread(
             check_punctuation=request.check_punctuation,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"교정 처리에 실패했습니다: {str(e)}",
-        ) from e
+            detail="교정 처리에 실패했습니다.",
+        )
 
 
 @router.post(
@@ -92,11 +92,11 @@ async def style_check(
             genre=request.genre,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"문체 검사에 실패했습니다: {str(e)}",
-        ) from e
+            detail="문체 검사에 실패했습니다.",
+        )
 
 
 @router.post(
@@ -135,11 +135,11 @@ async def structure_review(
             chapters=request.chapters,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"구조 검토에 실패했습니다: {str(e)}",
-        ) from e
+            detail="구조 검토에 실패했습니다.",
+        )
 
 
 @router.post(
@@ -199,11 +199,11 @@ async def full_review(
             include_stages=request.include_stages,
         )
         return report
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"전체 편집에 실패했습니다: {str(e)}",
-        ) from e
+            detail="전체 편집에 실패했습니다.",
+        )
 
 
 @router.get(

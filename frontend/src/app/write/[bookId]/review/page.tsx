@@ -217,7 +217,7 @@ export default function ReviewPage() {
           size="lg"
           onClick={handleApprove}
           isLoading={isApproving}
-          disabled={!report || report.verdict === "major_revision"}
+          disabled={!report || report.overall_score < 60}
           aria-label="승인하고 디자인 단계로 이동"
         >
           승인 및 디자인

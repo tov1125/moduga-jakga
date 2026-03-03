@@ -192,3 +192,46 @@ class UserProfile(BaseModel):
 2. **최소 단계 (Minimal Steps)**: 목표까지 최소한의 인터랙션으로 도달
 3. **지속적 피드백 (Continuous Feedback)**: 현재 상태를 항상 음성/소리로 안내
 4. **엄격한 타입 안전성**: Pydantic Strict 타입으로 런타임 에러 사전 방지
+
+## 에이전트 권한 계층 (Agent Authority Hierarchy)
+
+> **최상위 권한 문서**: `agent.md`가 이 프로젝트의 에이전트 시스템 최상위 설계 문서이다.
+> 모든 외부 에이전트 도구(bkit 등)는 agent.md의 에이전트 체계에 종속된다.
+
+### 권한 순서 (Authority Order)
+
+```
+Level 0 (최상위): agent.md의 A0 Orchestrator — 전체 워크플로우 최종 결정권
+Level 1 (감사권): agent.md의 A17 접근성 감사 — VETO(거부권) 보유
+Level 1 (감사권): agent.md의 A16 품질 보증 — 품질 게이트 차단권
+Level 1 (감사권): agent.md의 A18 사용자 대변인 — 사용자 관점 차단권
+Level 2 (전문가): agent.md의 A1~A15 전문 에이전트 — 도메인별 실행 권한
+Level 3 (도구):   bkit 에이전트 — Level 2 에이전트의 실행 도구로 동작
+```
+
+### 핵심 규칙
+
+1. **agent.md 우선**: agent.md에 정의된 역할, 릴레이 프로토콜, 품질 게이트, 에스컬레이션 규칙이 bkit 에이전트의 기본 동작보다 우선한다.
+2. **bkit은 실행 도구**: bkit 에이전트는 agent.md의 에이전트가 정의한 작업을 실행하는 도구(tool)로 사용된다. bkit 에이전트가 독자적으로 워크플로우를 결정하지 않는다.
+3. **VETO 존중**: A17(접근성)의 거부권은 어떤 bkit 에이전트의 출력보다 우선한다. 접근성 기준 미달 시 배포/출판 불가.
+4. **품질 게이트 적용**: bkit 에이전트의 모든 결과물은 agent.md의 5개 품질 게이트(코드/STT/글쓰기/책/접근성)를 통과해야 한다.
+5. **릴레이 프로토콜 준수**: 에이전트 간 작업 전달은 agent.md의 릴레이 프로토콜(handoff/review_request/feedback/escalation)을 따른다.
+
+### bkit → agent.md 바인딩 (실행 도구 매핑)
+
+| agent.md 에이전트 | bkit 실행 도구 | 관계 |
+|---|---|---|
+| A0 Orchestrator | `bkit:cto-lead` | A0가 지시, cto-lead가 실행 |
+| A1 기획 | `bkit:product-manager` | A1이 지시, PM이 실행 |
+| A2 UI/UX | `bkit:frontend-architect` | A2가 지시, FA가 UI 설계 실행 |
+| A3 Frontend | `bkit:frontend-architect` | A3이 지시, FA가 구현 실행 |
+| A4 Backend | `bkit:bkend-expert` | A4가 지시, BE가 구현 실행 |
+| A11 보안 | `bkit:security-architect` | A11이 지시, SA가 감사 실행 |
+| A12 테스트 | `bkit:qa-strategist` + `bkit:qa-monitor` | A12가 지시, QA가 실행 |
+| A14 인프라 | `bkit:infra-architect` | A14가 지시, IA가 구축 실행 |
+| A15 프로젝트 | `bkit:pipeline-guide` | A15가 지시, PG가 안내 실행 |
+| A16 품질 보증 | `bkit:code-analyzer` + `bkit:gap-detector` | A16이 지시, 분석/검증 실행 |
+| A17 접근성 감사 | `bkit:design-validator` + `bkit:gap-detector` | A17이 지시, 검증 실행 |
+| PDCA 반복 | `bkit:pdca-iterator` | A16 품질 미달 시 자동 반복 |
+| 보고서 | `bkit:report-generator` | A15 요청 시 보고서 생성 |
+| 아키텍처 전략 | `bkit:enterprise-expert` | A0 요청 시 전략 자문 |

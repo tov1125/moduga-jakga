@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import StrictInt, StrictStr
+from pydantic import Field, StrictInt, StrictStr
 
 from app.schemas.base import StrictBaseModel
 
@@ -21,16 +21,16 @@ class ChapterStatus(str, Enum):
 
 class ChapterCreate(StrictBaseModel):
     """챕터 생성 요청 스키마"""
-    title: StrictStr
-    order: StrictInt = 1
-    content: StrictStr = ""
+    title: StrictStr = Field(..., min_length=1, max_length=200)
+    order: StrictInt = Field(default=1, ge=1)
+    content: StrictStr = Field(default="")
 
 
 class ChapterUpdate(StrictBaseModel):
     """챕터 수정 요청 스키마"""
-    title: StrictStr | None = None
+    title: StrictStr | None = Field(default=None, min_length=1, max_length=200)
     content: StrictStr | None = None
-    order: StrictInt | None = None
+    order: StrictInt | None = Field(default=None, ge=1)
     status: ChapterStatus | None = None
 
 

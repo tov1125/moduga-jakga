@@ -40,8 +40,16 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
     announcePolite(`${FORMAT_LABELS[selectedFormat]} 형식으로 내보내기를 시작합니다`);
 
     try {
-      const response = await publishing.exportBook(bookId, selectedFormat);
-      setExportStatus(response.data);
+      const response = await publishing.exportBook({ book_id: bookId, format: selectedFormat });
+      setExportStatus({
+        export_id: response.data.export_id,
+        book_id: response.data.book_id,
+        format: response.data.format,
+        status: response.data.status,
+        progress: 0,
+        error_message: null,
+        created_at: response.data.created_at,
+      });
       announcePolite("내보내기가 시작되었습니다. 진행 상황을 확인 중입니다.");
     } catch {
       setError("내보내기를 시작할 수 없습니다. 다시 시도해 주세요.");
@@ -59,14 +67,14 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
 
     const interval = setInterval(async () => {
       try {
-        const response = await publishing.status(exportStatus.id);
+        const response = await publishing.status(exportStatus.export_id);
         setExportStatus(response.data);
 
         if (response.data.status === "completed") {
           announceAssertive("내보내기가 완료되었습니다. 다운로드할 수 있습니다.");
           setIsExporting(false);
         } else if (response.data.status === "failed") {
-          setError(response.data.error || "내보내기에 실패했습니다");
+          setError(response.data.error_message || "내보내기에 실패했습니다");
           announceAssertive("내보내기에 실패했습니다");
           setIsExporting(false);
         }
@@ -79,14 +87,19 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
   }, [exportStatus, announceAssertive]);
 
   const handleDownload = useCallback(async () => {
-    if (!exportStatus?.id) return;
+    if (!exportStatus?.export_id) return;
 
     try {
-      const downloadUrl = await publishing.download(exportStatus.id);
-      window.open(downloadUrl, "_blank");
+      const blob = await publishing.download(exportStatus.export_id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `export.${exportStatus.format}`;
+      a.click();
+      URL.revokeObjectURL(url);
       announcePolite("다운로드가 시작되었습니다");
     } catch {
-      setError("다운로드 링크를 가져올 수 없습니다");
+      setError("다운로드에 실패했습니다");
       announceAssertive("다운로드 실패");
     }
   }, [exportStatus, announcePolite, announceAssertive]);
@@ -202,7 +215,7 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
           )}
 
           {/* Download button */}
-          {exportStatus.status === "completed" && exportStatus.downloadUrl && (
+          {exportStatus.status === "completed" && (
             <Button
               variant="primary"
               size="md"

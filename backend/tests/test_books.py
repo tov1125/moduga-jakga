@@ -23,8 +23,12 @@ class TestListBooks:
 
         assert response.status_code == 200
         data = response.json()
+        assert data["success"] is True
         assert data["total"] == 0
-        assert data["books"] == []
+        assert data["data"] == []
+        assert data["page"] == 1
+        assert data["page_size"] == 10
+        assert data["total_pages"] == 1
 
     def test_list_books_with_data(
         self,
@@ -38,7 +42,8 @@ class TestListBooks:
         books_mock.select.return_value = books_mock
         books_mock.eq.return_value = books_mock
         books_mock.order.return_value = books_mock
-        books_mock.execute.return_value = MagicMock(data=[sample_book])
+        books_mock.range.return_value = books_mock
+        books_mock.execute.return_value = MagicMock(data=[sample_book], count=1)
 
         original_side_effect = mock_supabase.table.side_effect
 
@@ -53,8 +58,10 @@ class TestListBooks:
 
         assert response.status_code == 200
         data = response.json()
+        assert data["success"] is True
         assert data["total"] == 1
-        assert data["books"][0]["title"] == "테스트 도서"
+        assert data["data"][0]["title"] == "테스트 도서"
+        assert data["page"] == 1
 
     def test_list_books_unauthenticated(self, client: TestClient) -> None:
         """인증 없이 도서 목록 조회 시도"""
@@ -211,7 +218,7 @@ class TestUpdateBook:
 
         mock_supabase.table.side_effect = table_mock
 
-        response = client.put(
+        response = client.patch(
             "/api/v1/books/test-book-id-12345",
             headers=auth_headers,
             json={"title": "수정된 도서 제목"},

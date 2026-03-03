@@ -52,6 +52,9 @@ export function genreLabel(genre: BookGenre): string {
     novel: "소설",
     poem: "시",
     autobiography: "자서전",
+    children: "동화",
+    non_fiction: "논픽션",
+    other: "기타",
   };
   return labels[genre];
 }
@@ -64,9 +67,8 @@ export function statusLabel(status: BookStatus): string {
     draft: "초안",
     writing: "집필 중",
     editing: "편집 중",
-    reviewing: "검토 중",
     designing: "디자인 중",
-    publishing: "출판 중",
+    completed: "완성됨",
     published: "출판 완료",
   };
   return labels[status];
@@ -78,9 +80,9 @@ export function statusLabel(status: BookStatus): string {
 export function chapterStatusLabel(status: ChapterStatus): string {
   const labels: Record<ChapterStatus, string> = {
     draft: "초안",
-    written: "작성 완료",
-    edited: "편집 완료",
-    reviewed: "검토 완료",
+    writing: "작성 중",
+    completed: "완료",
+    editing: "편집 중",
     finalized: "최종 확인",
   };
   return labels[status];

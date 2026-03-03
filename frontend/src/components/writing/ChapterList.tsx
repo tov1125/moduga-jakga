@@ -75,7 +75,7 @@ export function ChapterList({
     (chapter: Chapter) => {
       onSelectChapter(chapter);
       announcePolite(
-        `${chapter.chapterNumber}장 ${chapter.title} 선택됨`
+        `${chapter.order}장 ${chapter.title} 선택됨`
       );
     },
     [onSelectChapter, announcePolite]
@@ -136,7 +136,7 @@ export function ChapterList({
                 >
                   <span className="flex items-center gap-2">
                     <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                      {chapter.chapterNumber}.
+                      {chapter.order}.
                     </span>
                     <span className="text-base">{chapter.title}</span>
                   </span>

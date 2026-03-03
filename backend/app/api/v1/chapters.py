@@ -129,20 +129,24 @@ async def create_chapter(
 
 
 @router.get(
-    "/chapters/{chapter_id}",
+    "/books/{book_id}/chapters/{chapter_id}",
     response_model=ChapterResponse,
     summary="챕터 상세 조회",
 )
 async def get_chapter(
+    book_id: str,
     chapter_id: str,
     current_user: dict[str, Any] = Depends(get_current_user),
     supabase: Client = Depends(get_supabase),
 ) -> ChapterResponse:
     """특정 챕터의 상세 정보를 반환합니다."""
+    await _verify_book_ownership(book_id, current_user["id"], supabase)
+
     response = (
         supabase.table(TABLE_CHAPTERS)
-        .select("*, books!inner(user_id)")
+        .select("*")
         .eq("id", chapter_id)
+        .eq("book_id", book_id)
         .execute()
     )
 
@@ -152,36 +156,30 @@ async def get_chapter(
             detail="챕터를 찾을 수 없습니다.",
         )
 
-    chapter = response.data[0]
-
-    # 도서 소유권 확인
-    book_info = chapter.get("books", {})
-    if book_info.get("user_id") != current_user["id"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="이 챕터에 접근할 권한이 없습니다.",
-        )
-
-    return _build_chapter_response(chapter)
+    return _build_chapter_response(response.data[0])
 
 
-@router.put(
-    "/chapters/{chapter_id}",
+@router.patch(
+    "/books/{book_id}/chapters/{chapter_id}",
     response_model=ChapterResponse,
     summary="챕터 수정",
 )
 async def update_chapter(
+    book_id: str,
     chapter_id: str,
     request: ChapterUpdate,
     current_user: dict[str, Any] = Depends(get_current_user),
     supabase: Client = Depends(get_supabase),
 ) -> ChapterResponse:
     """챕터 내용을 수정합니다."""
-    # 챕터 조회 및 권한 확인
+    await _verify_book_ownership(book_id, current_user["id"], supabase)
+
+    # 챕터 조회
     existing = (
         supabase.table(TABLE_CHAPTERS)
-        .select("*, books!inner(user_id)")
+        .select("*")
         .eq("id", chapter_id)
+        .eq("book_id", book_id)
         .execute()
     )
 
@@ -191,21 +189,12 @@ async def update_chapter(
             detail="챕터를 찾을 수 없습니다.",
         )
 
-    chapter = existing.data[0]
-    book_info = chapter.get("books", {})
-    if book_info.get("user_id") != current_user["id"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="이 챕터를 수정할 권한이 없습니다.",
-        )
-
     # None이 아닌 필드만 업데이트
     update_data: dict[str, Any] = {}
     if request.title is not None:
         update_data["title"] = request.title
     if request.content is not None:
         update_data["content"] = request.content
-        # 글자 수 재계산
         update_data["word_count"] = len(
             request.content.replace(" ", "").replace("\n", "")
         )
@@ -234,7 +223,6 @@ async def update_chapter(
         )
 
     # 도서 전체 글자 수 재계산
-    book_id = chapter["book_id"]
     all_chapters = (
         supabase.table(TABLE_CHAPTERS)
         .select("word_count")
@@ -248,21 +236,25 @@ async def update_chapter(
 
 
 @router.delete(
-    "/chapters/{chapter_id}",
+    "/books/{book_id}/chapters/{chapter_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="챕터 삭제",
 )
 async def delete_chapter(
+    book_id: str,
     chapter_id: str,
     current_user: dict[str, Any] = Depends(get_current_user),
     supabase: Client = Depends(get_supabase),
 ) -> None:
     """챕터를 삭제합니다."""
-    # 챕터 조회 및 권한 확인
+    await _verify_book_ownership(book_id, current_user["id"], supabase)
+
+    # 챕터 존재 확인
     existing = (
         supabase.table(TABLE_CHAPTERS)
-        .select("book_id, books!inner(user_id)")
+        .select("id")
         .eq("id", chapter_id)
+        .eq("book_id", book_id)
         .execute()
     )
 
@@ -271,16 +263,6 @@ async def delete_chapter(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="챕터를 찾을 수 없습니다.",
         )
-
-    chapter = existing.data[0]
-    book_info = chapter.get("books", {})
-    if book_info.get("user_id") != current_user["id"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="이 챕터를 삭제할 권한이 없습니다.",
-        )
-
-    book_id = chapter["book_id"]
 
     # 챕터 삭제
     supabase.table(TABLE_CHAPTERS).delete().eq("id", chapter_id).execute()

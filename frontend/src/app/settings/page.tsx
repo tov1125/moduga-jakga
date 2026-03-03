@@ -9,9 +9,8 @@ import type { DisabilityType } from "@/types/user";
 import type { TTSVoice } from "@/types/voice";
 
 const DISABILITY_OPTIONS: { value: DisabilityType; label: string }[] = [
-  { value: "total_blindness", label: "전맹" },
+  { value: "visual", label: "시각장애" },
   { value: "low_vision", label: "저시력" },
-  { value: "color_blindness", label: "색각 이상" },
   { value: "other", label: "기타 시각 장애" },
   { value: "none", label: "해당 없음" },
 ];
@@ -38,10 +37,10 @@ export default function SettingsPage() {
   // Initialize form from user data
   useEffect(() => {
     if (user) {
-      setDisplayName(user.displayName);
-      setDisabilityType(user.disabilityType);
-      setVoiceSpeed(user.voiceSpeed);
-      setVoiceType(user.voiceType);
+      setDisplayName(user.display_name);
+      setDisabilityType(user.disability_type);
+      setVoiceSpeed(user.voice_speed);
+      setVoiceType(user.voice_type);
     }
   }, [user]);
 
@@ -51,7 +50,7 @@ export default function SettingsPage() {
       setIsLoadingVoices(true);
       try {
         const response = await ttsApi.voices();
-        setAvailableVoices(response.data);
+        setAvailableVoices(response.data.voices);
       } catch {
         // Silently fail - use default voice
       } finally {
@@ -67,10 +66,10 @@ export default function SettingsPage() {
 
     try {
       await authApi.updateSettings({
-        displayName,
-        disabilityType,
-        voiceSpeed,
-        voiceType,
+        display_name: displayName,
+        disability_type: disabilityType,
+        voice_speed: voiceSpeed,
+        voice_type: voiceType,
       });
       await refreshUser();
       setMessage({ type: "success", text: "설정이 저장되었습니다." });

@@ -80,17 +80,17 @@ async def export_book(
             accessibility_tags=request.accessibility_tags,
             supabase=supabase,
         )
-    except Exception as e:
+    except Exception:
         # 내보내기 시작 실패 시 상태 업데이트
         supabase.table(TABLE_EXPORTS).update({
             "status": ExportStatusEnum.FAILED.value,
-            "error_message": str(e),
+            "error_message": "내보내기 처리 중 내부 오류가 발생했습니다.",
         }).eq("id", export_id).execute()
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"내보내기 시작에 실패했습니다: {str(e)}",
-        ) from e
+            detail="내보내기 시작에 실패했습니다.",
+        )
 
     return ExportResponse(
         export_id=export_id,

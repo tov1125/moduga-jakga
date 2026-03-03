@@ -39,3 +39,8 @@ backend/app/generated/
 exports/
 *.docx
 *.epub
+
+# Claude Code agent memory (local state)
+**/.claude/agent-memory/
+docs/.pdca-snapshots/
+docs/.bkit-memory.json

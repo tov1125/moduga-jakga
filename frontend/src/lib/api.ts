@@ -8,12 +8,11 @@ import type {
   Chapter,
   CreateChapterData,
   UpdateChapterData,
-  EditHistory,
-  EditSuggestion,
   QualityReport,
   CoverTemplate,
   ExportFormat,
   ExportStatus,
+  ExportResponse,
   TTSVoice,
   User,
   SignUpData,
@@ -64,7 +63,13 @@ async function apiFetch<T>(
     );
   }
 
-  return response.json();
+  const json = await response.json();
+
+  // BE returns raw Pydantic objects; wrap to match FE ApiResponse format
+  if (typeof json === "object" && json !== null && !("success" in json)) {
+    return { success: true, data: json } as unknown as T;
+  }
+  return json as T;
 }
 
 /** Custom error class for API errors */
@@ -89,7 +94,7 @@ export const auth = {
     });
   },
 
-  async login(data: LoginData): Promise<ApiResponse<{ user: User; accessToken: string }>> {
+  async login(data: LoginData): Promise<ApiResponse<{ user: User; access_token: string; token_type: string; expires_in: string }>> {
     return apiFetch("/auth/login", {
       method: "POST",
       body: JSON.stringify(data),
@@ -176,17 +181,22 @@ export const chapters = {
   },
 };
 
-// ─── Writing (AI generation) ─────────────────────────────────────────────────
+// ─── Writing (AI generation — matches BE GenerateRequest) ───────────────────
 
 export const writing = {
   /**
    * Stream AI-generated text via SSE.
-   * Returns a ReadableStream that yields text chunks.
+   * Body matches BE GenerateRequest: { genre, prompt, context, chapter_title, max_tokens, temperature }
    */
   async generate(
-    bookId: string,
-    chapterId: string,
-    prompt: string,
+    params: {
+      genre: string;
+      prompt: string;
+      context?: string;
+      chapter_title?: string;
+      max_tokens?: number;
+      temperature?: number;
+    },
     options?: RequestOptions
   ): Promise<ReadableStream<string>> {
     let token: string | null = null;
@@ -204,7 +214,7 @@ export const writing = {
     const response = await fetch(`${API_BASE}/writing/generate`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ bookId, chapterId, prompt }),
+      body: JSON.stringify(params),
       signal: options?.signal,
     });
 
@@ -248,134 +258,220 @@ export const writing = {
   },
 
   async rewrite(
-    bookId: string,
-    chapterId: string,
-    content: string,
-    instructions: string
-  ): Promise<ApiResponse<{ rewritten: string }>> {
+    originalText: string,
+    instruction: string,
+    genre: string,
+    styleGuide?: string
+  ): Promise<ApiResponse<{ rewritten_text: string; changes_summary: string }>> {
     return apiFetch("/writing/rewrite", {
       method: "POST",
-      body: JSON.stringify({ bookId, chapterId, content, instructions }),
+      body: JSON.stringify({
+        original_text: originalText,
+        instruction,
+        genre,
+        style_guide: styleGuide ?? "",
+      }),
     });
   },
 
   async structure(
-    bookId: string,
-    description: string
-  ): Promise<ApiResponse<{ chapters: Array<{ title: string; description: string }> }>> {
+    bookTitle: string,
+    genre: string,
+    description: string,
+    targetChapters?: number
+  ): Promise<ApiResponse<{ chapters: Array<{ order: number; title: string; description: string; estimated_pages: number }>; overall_summary: string }>> {
     return apiFetch("/writing/structure", {
       method: "POST",
-      body: JSON.stringify({ bookId, description }),
+      body: JSON.stringify({
+        book_title: bookTitle,
+        genre,
+        description,
+        target_chapters: targetChapters ?? 10,
+      }),
     });
   },
 };
 
-// ─── Editing ─────────────────────────────────────────────────────────────────
+// ─── Editing (matches BE ProofreadRequest, StyleCheckRequest, etc.) ─────────
 
 export const editing = {
+  /** POST /editing/proofread — BE ProofreadRequest { text, check_spelling, check_grammar, check_punctuation } */
   async proofread(
-    bookId: string,
-    chapterId: string
-  ): Promise<ApiResponse<{ suggestions: EditSuggestion[] }>> {
-    return apiFetch(`/editing/proofread`, {
+    text: string,
+    options?: {
+      check_spelling?: boolean;
+      check_grammar?: boolean;
+      check_punctuation?: boolean;
+    }
+  ): Promise<ApiResponse<{
+    corrected_text: string;
+    corrections: Array<{
+      original: string;
+      corrected: string;
+      reason: string;
+      position_start: number;
+      position_end: number;
+      severity: string;
+    }>;
+    total_corrections: number;
+    accuracy_score: number;
+  }>> {
+    return apiFetch("/editing/proofread", {
       method: "POST",
-      body: JSON.stringify({ bookId, chapterId }),
+      body: JSON.stringify({
+        text,
+        check_spelling: options?.check_spelling ?? true,
+        check_grammar: options?.check_grammar ?? true,
+        check_punctuation: options?.check_punctuation ?? true,
+      }),
     });
   },
 
+  /** POST /editing/style-check — BE StyleCheckRequest { text, reference_style, genre } */
   async styleCheck(
-    bookId: string,
-    chapterId: string
-  ): Promise<ApiResponse<{ suggestions: EditSuggestion[] }>> {
-    return apiFetch(`/editing/style-check`, {
+    text: string,
+    referenceStyle?: string,
+    genre?: string
+  ): Promise<ApiResponse<{
+    issues: Array<{
+      text_excerpt: string;
+      issue: string;
+      suggestion: string;
+      severity: string;
+    }>;
+    consistency_score: number;
+    overall_feedback: string;
+  }>> {
+    return apiFetch("/editing/style-check", {
       method: "POST",
-      body: JSON.stringify({ bookId, chapterId }),
+      body: JSON.stringify({
+        text,
+        reference_style: referenceStyle ?? "",
+        genre: genre ?? "",
+      }),
     });
   },
 
+  /** POST /editing/structure-review — BE StructureReviewRequest { book_id, chapters[] } */
   async structureReview(
     bookId: string,
-    chapterId: string
-  ): Promise<ApiResponse<{ suggestions: EditSuggestion[] }>> {
-    return apiFetch(`/editing/structure-review`, {
+    chapters: string[]
+  ): Promise<ApiResponse<{
+    flow_score: number;
+    organization_score: number;
+    feedback: string[];
+    suggestions: string[];
+  }>> {
+    return apiFetch("/editing/structure-review", {
       method: "POST",
-      body: JSON.stringify({ bookId, chapterId }),
+      body: JSON.stringify({ book_id: bookId, chapters }),
     });
   },
 
+  /** POST /editing/full-review — BE FullReviewRequest { book_id, include_stages[] } */
   async fullReview(
-    bookId: string
-  ): Promise<ApiResponse<{ history: EditHistory[] }>> {
-    return apiFetch(`/editing/full-review`, {
+    bookId: string,
+    includeStages?: string[]
+  ): Promise<ApiResponse<QualityReport>> {
+    return apiFetch("/editing/full-review", {
       method: "POST",
-      body: JSON.stringify({ bookId }),
+      body: JSON.stringify({
+        book_id: bookId,
+        include_stages: includeStages ?? ["structure", "content", "proofread", "final"],
+      }),
     });
   },
 
-  async report(bookId: string, chapterId?: string): Promise<ApiResponse<QualityReport>> {
-    const body: Record<string, string> = { bookId };
-    if (chapterId) body.chapterId = chapterId;
-    return apiFetch(`/editing/report`, {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
+  /** GET /editing/report/{book_id} — returns QualityReport */
+  async report(bookId: string): Promise<ApiResponse<QualityReport>> {
+    return apiFetch(`/editing/report/${bookId}`);
   },
 };
 
-// ─── Design ──────────────────────────────────────────────────────────────────
+// ─── Design (matches BE CoverGenerateRequest, LayoutPreviewRequest) ─────────
 
 export const design = {
-  async generateCover(
-    bookId: string,
-    templateId?: string
-  ): Promise<ApiResponse<{ coverUrl: string }>> {
-    return apiFetch("/design/cover", {
+  /** POST /design/cover/generate — BE CoverGenerateRequest */
+  async generateCover(params: {
+    book_title: string;
+    author_name: string;
+    genre: string;
+    style?: string;
+    description?: string;
+    color_scheme?: string;
+  }): Promise<ApiResponse<{ image_url: string; prompt_used: string; style: string }>> {
+    return apiFetch("/design/cover/generate", {
       method: "POST",
-      body: JSON.stringify({ bookId, templateId }),
+      body: JSON.stringify(params),
     });
   },
 
-  async templates(): Promise<ApiResponse<CoverTemplate[]>> {
-    return apiFetch("/design/templates");
+  /** GET /design/cover/templates — BE CoverTemplateListResponse */
+  async templates(): Promise<ApiResponse<{ templates: CoverTemplate[]; total: number }>> {
+    return apiFetch("/design/cover/templates");
   },
 
-  async layoutPreview(
-    bookId: string,
-    options: { fontSize?: number; fontFamily?: string }
-  ): Promise<ApiResponse<{ previewUrl: string }>> {
-    return apiFetch("/design/layout-preview", {
+  /** POST /design/layout/preview — BE LayoutPreviewRequest */
+  async layoutPreview(params: {
+    book_id: string;
+    page_size?: string;
+    font_size?: number;
+    line_spacing?: number;
+  }): Promise<ApiResponse<{ preview_url: string; total_pages: number; page_size: string }>> {
+    return apiFetch("/design/layout/preview", {
       method: "POST",
-      body: JSON.stringify({ bookId, ...options }),
+      body: JSON.stringify(params),
     });
   },
 };
 
-// ─── Publishing ──────────────────────────────────────────────────────────────
+// ─── Publishing (matches BE ExportRequest, ExportStatus, ExportResponse) ────
 
 export const publishing = {
-  async exportBook(
-    bookId: string,
-    format: ExportFormat
-  ): Promise<ApiResponse<ExportStatus>> {
+  /** POST /publishing/export — BE ExportRequest { book_id, format, ... } */
+  async exportBook(params: {
+    book_id: string;
+    format: ExportFormat;
+    include_cover?: boolean;
+    include_toc?: boolean;
+    accessibility_tags?: boolean;
+  }): Promise<ApiResponse<ExportResponse>> {
     return apiFetch("/publishing/export", {
       method: "POST",
-      body: JSON.stringify({ bookId, format }),
+      body: JSON.stringify(params),
     });
   },
 
+  /** GET /publishing/export/{export_id} — BE ExportStatus */
   async status(exportId: string): Promise<ApiResponse<ExportStatus>> {
-    return apiFetch(`/publishing/status/${exportId}`);
+    return apiFetch(`/publishing/export/${exportId}`);
   },
 
-  async download(exportId: string): Promise<string> {
-    const result = await apiFetch<ApiResponse<{ downloadUrl: string }>>(
-      `/publishing/download/${exportId}`
-    );
-    return result.data.downloadUrl;
+  /** GET /publishing/download/{export_id} — returns file (Blob) */
+  async download(exportId: string): Promise<Blob> {
+    let token: string | null = null;
+    if (typeof window !== "undefined") {
+      token = localStorage.getItem("access_token");
+    }
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}/publishing/download/${exportId}`, {
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new ApiError("다운로드 오류", response.status, "DOWNLOAD_ERROR");
+    }
+
+    return response.blob();
   },
 };
 
-// ─── TTS ─────────────────────────────────────────────────────────────────────
+// ─── TTS (matches BE TTSSynthesizeRequest { text, voice_id, speed, ... }) ───
 
 export const tts = {
   async synthesize(
@@ -398,7 +494,11 @@ export const tts = {
     const response = await fetch(`${API_BASE}/tts/synthesize`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ text, voiceId, speed }),
+      body: JSON.stringify({
+        text,
+        voice_id: voiceId ?? "nara",
+        speed: speed ?? 0.0,
+      }),
     });
 
     if (!response.ok) {
@@ -408,7 +508,8 @@ export const tts = {
     return response.arrayBuffer();
   },
 
-  async voices(): Promise<ApiResponse<TTSVoice[]>> {
+  /** GET /tts/voices — BE TTSVoiceListResponse { voices, total } */
+  async voices(): Promise<ApiResponse<{ voices: TTSVoice[]; total: number }>> {
     return apiFetch("/tts/voices");
   },
 };

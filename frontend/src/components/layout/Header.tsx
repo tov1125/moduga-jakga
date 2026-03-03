@@ -50,9 +50,9 @@ export function Header() {
                 <>
                   <span
                     className="text-gray-700 dark:text-gray-300 text-base"
-                    aria-label={`${user.displayName}님으로 로그인됨`}
+                    aria-label={`${user.display_name}님으로 로그인됨`}
                   >
-                    {user.displayName}님
+                    {user.display_name}님
                   </span>
                   <Link
                     href="/settings"

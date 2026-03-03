@@ -336,7 +336,7 @@ class EditingService:
                     stage=EditingStage.STRUCTURE,
                     score=0.0,
                     issues_count=0,
-                    feedback=f"구조 편집 실패: {str(e)}",
+                    feedback="구조 편집 실패: 내부 오류가 발생했습니다.",
                 ))
 
         # 2단계: 내용 편집 (문체 검사)
@@ -358,7 +358,7 @@ class EditingService:
                     stage=EditingStage.CONTENT,
                     score=0.0,
                     issues_count=0,
-                    feedback=f"내용 편집 실패: {str(e)}",
+                    feedback="내용 편집 실패: 내부 오류가 발생했습니다.",
                 ))
 
         # 3단계: 교정/교열
@@ -379,7 +379,7 @@ class EditingService:
                     stage=EditingStage.PROOFREAD,
                     score=0.0,
                     issues_count=0,
-                    feedback=f"교정 실패: {str(e)}",
+                    feedback="교정 실패: 내부 오류가 발생했습니다.",
                 ))
 
         # 4단계: 최종 검토
@@ -399,7 +399,7 @@ class EditingService:
                     stage=EditingStage.FINAL,
                     score=0.0,
                     issues_count=0,
-                    feedback=f"최종 검토 실패: {str(e)}",
+                    feedback="최종 검토 실패: 내부 오류가 발생했습니다.",
                 ))
 
         # 종합 점수 계산
@@ -466,7 +466,7 @@ class EditingService:
 
         except Exception as e:
             logger.error(f"최종 검토 중 오류: {e}")
-            return {"score": 0.0, "issues_count": 0, "feedback": f"오류: {str(e)}"}
+            return {"score": 0.0, "issues_count": 0, "feedback": "최종 검토 중 오류가 발생했습니다."}
 
     def _generate_summary(
         self,

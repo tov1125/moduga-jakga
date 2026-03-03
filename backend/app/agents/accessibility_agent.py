@@ -110,7 +110,7 @@ class AccessibilityAgent(BaseAgent):
             return self.create_message(
                 to_agent=message.from_agent,
                 message_type=MessageType.ERROR,
-                payload={"error": str(e)},
+                payload={"error": "접근성 감사 중 내부 오류가 발생했습니다."},
                 correlation_id=correlation_id,
             )
 

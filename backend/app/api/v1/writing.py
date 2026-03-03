@@ -72,9 +72,9 @@ async def generate_text(
             )
             yield f"data: {done_data}\n\n"
 
-        except Exception as e:
+        except Exception:
             error_data = json.dumps(
-                {"error": f"글 생성 중 오류: {str(e)}"},
+                {"error": "글 생성 중 오류가 발생했습니다."},
                 ensure_ascii=False,
             )
             yield f"data: {error_data}\n\n"
@@ -120,11 +120,11 @@ async def rewrite_text(
             style_guide=request.style_guide,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"재작성에 실패했습니다: {str(e)}",
-        ) from e
+            detail="재작성에 실패했습니다.",
+        )
 
 
 @router.post(
@@ -157,8 +157,8 @@ async def suggest_structure(
             target_chapters=request.target_chapters,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"구조 제안에 실패했습니다: {str(e)}",
-        ) from e
+            detail="구조 제안에 실패했습니다.",
+        )

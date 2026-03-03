@@ -1092,3 +1092,155 @@ Level 4: 사용자 확인 필요
   - 법적 리스크 발견
   - 접근성 거부권 발동
 ```
+
+---
+
+## 외부 에이전트 도구 종속 규칙 (bkit Agent Binding)
+
+### 권한 원칙
+
+> **이 문서(agent.md)의 에이전트 체계가 최상위 권한을 가진다.**
+> 모든 외부 에이전트 도구(bkit 플러그인 등)는 본 문서의 에이전트에 종속되어 실행 도구(tool)로만 동작한다.
+
+### 권한 계층도
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Level 0: agent.md A0 Orchestrator (최종 결정권)          │
+├─────────────────────────────────────────────────────────┤
+│  Level 1: agent.md 감사 에이전트 (VETO/차단권)             │
+│    A17 접근성 감사 > A16 품질 보증 > A18 사용자 대변인       │
+├─────────────────────────────────────────────────────────┤
+│  Level 2: agent.md 전문 에이전트 (도메인 실행권)            │
+│    A1~A15 (기획/UI/FE/BE/STT/TTS/AI/편집/디자인/출판 등)  │
+├─────────────────────────────────────────────────────────┤
+│  Level 3: bkit 에이전트 (실행 도구)                        │
+│    cto-lead, product-manager, frontend-architect,        │
+│    bkend-expert, security-architect, infra-architect,    │
+│    qa-strategist, qa-monitor, code-analyzer,             │
+│    gap-detector, design-validator, pdca-iterator,        │
+│    report-generator, enterprise-expert,                  │
+│    starter-guide, pipeline-guide                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 종속 규칙
+
+1. **bkit 에이전트는 agent.md 에이전트의 실행 도구(tool)이다**
+   - bkit 에이전트가 독자적으로 워크플로우를 결정하거나 우선순위를 변경할 수 없다
+   - 작업 지시는 항상 agent.md 에이전트 → bkit 에이전트 방향으로 흐른다
+
+2. **충돌 시 agent.md가 우선한다**
+   - bkit 에이전트의 기본 동작이 agent.md의 규칙과 충돌하면, agent.md의 규칙을 따른다
+   - 예: bkit gap-detector가 90% 통과를 제안해도, agent.md A16의 품질 게이트(80%)가 기준이다
+
+3. **VETO 체인은 절대적이다**
+   - A17 접근성 감사의 거부권은 어떤 bkit 에이전트의 결과보다 상위이다
+   - bkit 에이전트가 "통과"를 판정해도, A17이 "불합격"이면 최종 불합격이다
+
+4. **릴레이 프로토콜을 따른다**
+   - bkit 에이전트 간 작업 전달도 agent.md의 릴레이 프로토콜(handoff/review_request/feedback/escalation)을 준수한다
+   - 모든 작업에 correlation_id를 부여하여 추적 가능하게 한다
+
+5. **에스컬레이션은 agent.md 규칙을 따른다**
+   - bkit 에이전트의 자체 에스컬레이션보다 agent.md의 4단계 에스컬레이션 규칙이 우선한다
+
+### bkit 에이전트 바인딩 맵
+
+```yaml
+# agent.md 에이전트 → bkit 실행 도구 매핑
+binding:
+  A0_orchestrator:
+    tool: bkit:cto-lead
+    role: "A0의 지시를 받아 팀 조율 실행"
+    constraint: "A0의 워크플로우 패턴 결정을 따름"
+
+  A1_planning:
+    tool: bkit:product-manager
+    role: "A1의 요구사항을 기반으로 PRD/스토리 작성"
+
+  A2_uiux:
+    tool: bkit:frontend-architect
+    role: "A2의 Voice-First 설계를 기반으로 컴포넌트 설계"
+
+  A3_frontend:
+    tool: bkit:frontend-architect
+    role: "A3의 접근성 요구사항을 기반으로 FE 구현"
+    constraint: "WAI-ARIA, 키보드 탐색 필수"
+
+  A4_backend:
+    tool: bkit:bkend-expert
+    role: "A4의 API 설계를 기반으로 BE 구현"
+    constraint: "Pydantic Strict 타입 필수"
+
+  A11_security:
+    tool: bkit:security-architect
+    role: "A11의 보안 정책을 기반으로 감사 실행"
+    constraint: "OWASP Top 10, 음성 데이터 암호화"
+
+  A12_testing:
+    tool: [bkit:qa-strategist, bkit:qa-monitor]
+    role: "A12의 테스트 계획을 기반으로 테스트 실행"
+    constraint: "커버리지 >= 80%, 접근성 점수 >= 90"
+
+  A14_infra:
+    tool: bkit:infra-architect
+    role: "A14의 인프라 요구사항을 기반으로 구축"
+
+  A15_project:
+    tool: bkit:pipeline-guide
+    role: "A15의 스프린트 계획을 기반으로 파이프라인 안내"
+
+  A16_quality:
+    tool: [bkit:code-analyzer, bkit:gap-detector]
+    role: "A16의 품질 게이트 기준으로 분석/검증 실행"
+    constraint: "5개 품질 게이트 기준 적용"
+
+  A17_accessibility:
+    tool: [bkit:design-validator, bkit:gap-detector]
+    role: "A17의 WCAG 체크리스트 기준으로 접근성 검증"
+    constraint: "VETO 권한 — 최종 차단권"
+
+  pdca_support:
+    tool: bkit:pdca-iterator
+    role: "A16 품질 미달 시 자동 반복 개선"
+    trigger: "quality_gate < threshold"
+
+  reporting:
+    tool: bkit:report-generator
+    role: "A15 요청 시 PDCA 보고서 생성"
+
+  strategy:
+    tool: bkit:enterprise-expert
+    role: "A0 요청 시 아키텍처 전략 자문"
+```
+
+### 실행 흐름 예시
+
+```
+[사용자 요청: "새 챕터 작성"]
+
+1. A0 (Orchestrator) → 작업 라우팅 결정
+   └→ bkit:cto-lead 실행: 워크플로우 패턴 = 반복형
+
+2. A5 (STT) → 사용자 음성 수신
+   └→ (직접 구현 — bkit 미사용)
+
+3. A7 (AI 글쓰기) → 글 생성
+   └→ (직접 구현 — bkit 미사용)
+
+4. A8 (편집) → 4단계 편집
+   └→ (직접 구현 — bkit 미사용)
+
+5. A16 (품질 보증) → 품질 게이트 검사
+   └→ bkit:code-analyzer 실행: 코드 품질 분석
+   └→ bkit:gap-detector 실행: 설계-구현 갭 검증
+   └→ IF 미달: bkit:pdca-iterator 자동 반복
+
+6. A17 (접근성 감사) → WCAG 검증 [VETO 가능]
+   └→ bkit:design-validator 실행: 접근성 체크리스트 검증
+   └→ IF 불합격: 전체 파이프라인 차단 (VETO 발동)
+
+7. A15 (프로젝트) → 결과 기록
+   └→ bkit:report-generator 실행: 완료 보고서 생성
+```

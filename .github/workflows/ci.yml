@@ -81,11 +81,9 @@ jobs:
 
       - name: TypeScript 타입 검사
         run: npx tsc --noEmit
-        continue-on-error: true
 
       - name: ESLint 검사
         run: npm run lint
-        continue-on-error: true
 
       - name: 단위 테스트 + 접근성 테스트
         run: npm run test:run
@@ -96,7 +94,16 @@ jobs:
 
       - name: 테스트 커버리지
         run: npm run test:coverage
-        continue-on-error: true
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-key
+          NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+
+      - name: Playwright E2E 설치
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E 접근성 테스트
+        run: npx playwright test
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: test-key

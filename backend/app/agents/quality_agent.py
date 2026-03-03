@@ -79,7 +79,7 @@ class QualityAgent(BaseAgent):
             return self.create_message(
                 to_agent=message.from_agent,
                 message_type=MessageType.ERROR,
-                payload={"error": str(e), "stage": stage},
+                payload={"error": "품질 검증 중 내부 오류가 발생했습니다.", "stage": stage},
                 correlation_id=correlation_id,
             )
 

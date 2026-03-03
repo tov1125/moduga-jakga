@@ -5,14 +5,14 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-/** Paginated response for list endpoints */
+/** Paginated response for list endpoints (matches BE snake_case) */
 export interface PaginatedResponse<T> {
   success: boolean;
   data: T[];
   total: number;
   page: number;
-  pageSize: number;
-  totalPages: number;
+  page_size: number;
+  total_pages: number;
 }
 
 /** Error response from the API */

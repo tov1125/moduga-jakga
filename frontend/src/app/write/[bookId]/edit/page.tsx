@@ -20,7 +20,7 @@ import type {
 } from "@/types/book";
 import Link from "next/link";
 
-type EditingStage = "structure" | "content" | "proofread" | "copyedit";
+type EditingStage = "structure" | "content" | "proofread" | "final";
 
 /**
  * Editing page with 4-stage editing interface.
@@ -71,28 +71,61 @@ export default function EditingPage() {
       announcePolite("분석을 진행하고 있습니다. 잠시 기다려 주세요.");
 
       try {
-        let response;
+        let mapped: EditSuggestion[] = [];
         switch (stage) {
-          case "structure":
-            response = await editingApi.structureReview(bookId, activeChapter.id);
+          case "structure": {
+            const structRes = await editingApi.structureReview(
+              bookId,
+              chapters.map((c) => c.content)
+            );
+            mapped = structRes.data.suggestions.map((s, i) => ({
+              id: `struct-${i}`,
+              type: "structure" as const,
+              original: "",
+              suggested: s,
+              explanation: structRes.data.feedback[i] || "",
+              position: { start: 0, end: 0 },
+              accepted: null,
+            }));
             break;
-          case "content":
-            response = await editingApi.styleCheck(bookId, activeChapter.id);
+          }
+          case "content": {
+            const styleRes = await editingApi.styleCheck(activeChapter.content);
+            mapped = styleRes.data.issues.map((issue, i) => ({
+              id: `style-${i}`,
+              type: "style" as const,
+              original: issue.text_excerpt,
+              suggested: issue.suggestion,
+              explanation: issue.issue,
+              position: { start: 0, end: 0 },
+              accepted: null,
+            }));
             break;
+          }
           case "proofread":
-          case "copyedit":
-            response = await editingApi.proofread(bookId, activeChapter.id);
+          case "final": {
+            const proofRes = await editingApi.proofread(activeChapter.content);
+            mapped = proofRes.data.corrections.map((c, i) => ({
+              id: `proof-${i}`,
+              type: "grammar" as const,
+              original: c.original,
+              suggested: c.corrected,
+              explanation: c.reason,
+              position: { start: c.position_start, end: c.position_end },
+              accepted: null,
+            }));
             break;
+          }
         }
-        setSuggestions(response.data.suggestions);
-        announcePolite(`${response.data.suggestions.length}개의 제안이 있습니다`);
+        setSuggestions(mapped);
+        announcePolite(`${mapped.length}개의 제안이 있습니다`);
       } catch {
         announceAssertive("분석에 실패했습니다");
       } finally {
         setIsAnalyzing(false);
       }
     },
-    [bookId, activeChapter, announcePolite, announceAssertive]
+    [bookId, activeChapter, chapters, announcePolite, announceAssertive]
   );
 
   // Accept suggestion
@@ -121,10 +154,7 @@ export default function EditingPage() {
   const handleLoadReport = useCallback(async () => {
     setIsLoadingReport(true);
     try {
-      const response = await editingApi.report(
-        bookId,
-        activeChapter?.id
-      );
+      const response = await editingApi.report(bookId);
       setReport(response.data);
       announcePolite("품질 보고서가 준비되었습니다");
     } catch {
@@ -197,7 +227,7 @@ export default function EditingPage() {
           >
             {chapters.map((chapter) => (
               <option key={chapter.id} value={chapter.id}>
-                {chapter.chapterNumber}장: {chapter.title}
+                {chapter.order}장: {chapter.title}
               </option>
             ))}
           </select>

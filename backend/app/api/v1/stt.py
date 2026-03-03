@@ -90,7 +90,7 @@ async def stt_stream(websocket: WebSocket) -> None:
     except Exception as e:
         logger.error(f"STT 스트리밍 중 오류 발생: {e}")
         try:
-            await websocket.send_json({"error": f"STT 처리 중 오류: {str(e)}"})
+            await websocket.send_json({"error": "STT 처리 중 오류가 발생했습니다."})
             await websocket.close(code=4000, reason="서버 오류")
         except Exception:
             pass

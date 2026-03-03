@@ -5,7 +5,7 @@ import type { EditSuggestion } from "@/types/book";
 import { Button } from "@/components/ui/Button";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 
-type EditingStage = "structure" | "content" | "proofread" | "copyedit";
+type EditingStage = "structure" | "content" | "proofread" | "final";
 
 interface EditingPanelProps {
   suggestions: EditSuggestion[];
@@ -23,10 +23,10 @@ const STAGE_LABELS: Record<EditingStage, string> = {
   structure: "구조 편집",
   content: "내용 편집",
   proofread: "교정",
-  copyedit: "교열",
+  final: "최종 검토",
 };
 
-const STAGE_ORDER: EditingStage[] = ["structure", "content", "proofread", "copyedit"];
+const STAGE_ORDER: EditingStage[] = ["structure", "content", "proofread", "final"];
 
 /**
  * 4-stage editing interface with suggestions list.

@@ -37,8 +37,8 @@ export function CoverDesigner({
     setError(null);
     try {
       const response = await design.templates();
-      setTemplates(response.data);
-      announcePolite(`${response.data.length}개의 템플릿을 불러왔습니다`);
+      setTemplates(response.data.templates);
+      announcePolite(`${response.data.templates.length}개의 템플릿을 불러왔습니다`);
     } catch {
       setError("템플릿을 불러올 수 없습니다");
       announceAssertive("템플릿을 불러올 수 없습니다");
@@ -53,11 +53,13 @@ export function CoverDesigner({
     announcePolite("표지를 생성하고 있습니다. 잠시 기다려 주세요.");
 
     try {
-      const response = await design.generateCover(
-        bookId,
-        selectedTemplate || undefined
-      );
-      setCoverUrl(response.data.coverUrl);
+      const response = await design.generateCover({
+        book_title: bookTitle,
+        author_name: "",
+        genre: "",
+        style: selectedTemplate || undefined,
+      });
+      setCoverUrl(response.data.image_url);
       announcePolite("새 표지가 생성되었습니다");
     } catch {
       setError("표지 생성에 실패했습니다. 다시 시도해 주세요.");
@@ -156,9 +158,9 @@ export function CoverDesigner({
                 `}
               >
                 <div className="w-full h-24 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                  {template.previewUrl && (
+                  {template.preview_url && (
                     <img
-                      src={template.previewUrl}
+                      src={template.preview_url}
                       alt={`${template.name} 템플릿 미리보기`}
                       className="w-full h-full object-cover"
                     />

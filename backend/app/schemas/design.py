@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import StrictFloat, StrictInt, StrictStr
+from pydantic import Field, StrictFloat, StrictInt, StrictStr
 
 from app.schemas.base import StrictBaseModel
 from app.schemas.book import Genre
@@ -30,12 +30,12 @@ class PageSize(str, Enum):
 
 class CoverGenerateRequest(StrictBaseModel):
     """표지 생성 요청 스키마"""
-    book_title: StrictStr
-    author_name: StrictStr
+    book_title: StrictStr = Field(..., min_length=1, max_length=200)
+    author_name: StrictStr = Field(..., min_length=1, max_length=100)
     genre: Genre
     style: CoverStyle = CoverStyle.MINIMALIST
-    description: StrictStr = ""         # 표지에 대한 추가 설명
-    color_scheme: StrictStr = ""        # 선호 색상 (예: "따뜻한 톤", "파란색 계열")
+    description: StrictStr = Field(default="", max_length=1000)
+    color_scheme: StrictStr = Field(default="", max_length=100)
 
 
 class CoverGenerateResponse(StrictBaseModel):
@@ -65,12 +65,12 @@ class LayoutPreviewRequest(StrictBaseModel):
     """내지 레이아웃 미리보기 요청 스키마"""
     book_id: StrictStr
     page_size: PageSize = PageSize.A5
-    font_size: StrictFloat = 11.0       # 본문 글꼴 크기 (pt)
-    line_spacing: StrictFloat = 1.6     # 줄간격 배율
-    margin_top: StrictFloat = 20.0      # 상단 여백 (mm)
-    margin_bottom: StrictFloat = 20.0   # 하단 여백 (mm)
-    margin_left: StrictFloat = 20.0     # 좌측 여백 (mm)
-    margin_right: StrictFloat = 15.0    # 우측 여백 (mm)
+    font_size: StrictFloat = Field(default=11.0, ge=8.0, le=24.0)
+    line_spacing: StrictFloat = Field(default=1.6, ge=1.0, le=3.0)
+    margin_top: StrictFloat = Field(default=20.0, ge=5.0, le=50.0)
+    margin_bottom: StrictFloat = Field(default=20.0, ge=5.0, le=50.0)
+    margin_left: StrictFloat = Field(default=20.0, ge=5.0, le=50.0)
+    margin_right: StrictFloat = Field(default=15.0, ge=5.0, le=50.0)
 
 
 class LayoutPreviewResponse(StrictBaseModel):

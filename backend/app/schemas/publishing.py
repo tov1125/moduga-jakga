@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import StrictBool, StrictFloat, StrictStr
+from pydantic import Field, StrictBool, StrictFloat, StrictStr
 
 from app.schemas.base import StrictBaseModel
 from app.schemas.design import PageSize
@@ -42,7 +42,7 @@ class ExportStatus(StrictBaseModel):
     book_id: StrictStr
     format: ExportFormat
     status: ExportStatusEnum
-    progress: StrictFloat = 0.0               # 진행률 (0.0 ~ 100.0)
+    progress: StrictFloat = Field(default=0.0, ge=0.0, le=100.0)  # 진행률
     error_message: StrictStr | None = None
     created_at: StrictStr
 

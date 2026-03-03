@@ -34,8 +34,8 @@ export default function LoginPage() {
 
       try {
         const response = await auth.login({ email, password });
-        if (response.data.accessToken) {
-          localStorage.setItem("access_token", response.data.accessToken);
+        if (response.data.access_token) {
+          localStorage.setItem("access_token", response.data.access_token);
         }
         announcePolite("로그인되었습니다. 대시보드로 이동합니다.");
         router.push("/dashboard");

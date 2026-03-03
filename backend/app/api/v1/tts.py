@@ -134,11 +134,11 @@ async def synthesize_speech(
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"음성 합성에 실패했습니다: {str(e)}",
-        ) from e
+            detail="음성 합성에 실패했습니다.",
+        )
 
 
 @router.get(

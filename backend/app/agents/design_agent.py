@@ -71,7 +71,7 @@ class DesignAgent(BaseAgent):
             return self.create_message(
                 to_agent=message.from_agent,
                 message_type=MessageType.ERROR,
-                payload={"error": str(e), "action": action},
+                payload={"error": "디자인 처리 중 내부 오류가 발생했습니다.", "action": action},
                 correlation_id=correlation_id,
             )
 

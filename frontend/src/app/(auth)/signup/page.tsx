@@ -9,9 +9,8 @@ import { auth } from "@/lib/api";
 import type { DisabilityType } from "@/types/user";
 
 const DISABILITY_OPTIONS: { value: DisabilityType; label: string }[] = [
-  { value: "total_blindness", label: "전맹" },
+  { value: "visual", label: "시각장애" },
   { value: "low_vision", label: "저시력" },
-  { value: "color_blindness", label: "색각 이상" },
   { value: "other", label: "기타 시각 장애" },
   { value: "none", label: "해당 없음" },
 ];
@@ -72,8 +71,8 @@ export default function SignupPage() {
         await auth.signup({
           email,
           password,
-          displayName,
-          disabilityType,
+          display_name: displayName,
+          disability_type: disabilityType,
         });
         announcePolite(
           "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다."

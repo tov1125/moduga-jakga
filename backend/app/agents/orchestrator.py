@@ -146,7 +146,7 @@ class OrchestratorAgent(BaseAgent):
                 error_msg = self.create_message(
                     to_agent="orchestrator",
                     message_type=MessageType.ERROR,
-                    payload={"error": str(e), "stage": agent_name},
+                    payload={"error": "파이프라인 처리 중 내부 오류가 발생했습니다.", "stage": agent_name},
                     correlation_id=f"pipeline-{book_id}",
                 )
                 results.append(error_msg)

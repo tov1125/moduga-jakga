@@ -82,7 +82,7 @@ export default function WritingWorkspacePage() {
       const newNumber = chapters.length + 1;
       const response = await chaptersApi.create(bookId, {
         title: `제${newNumber}장`,
-        chapterNumber: newNumber,
+        order: newNumber,
       });
       setChapters((prev) => [...prev, response.data]);
       setActiveChapter(response.data);
@@ -118,7 +118,6 @@ export default function WritingWorkspacePage() {
     try {
       await chaptersApi.update(bookId, activeChapter.id, {
         content,
-        rawTranscript: transcript,
       });
       announcePolite("저장되었습니다");
     } catch {
@@ -150,9 +149,12 @@ export default function WritingWorkspacePage() {
 
     try {
       const stream = await writingApi.generate(
-        bookId,
-        activeChapter.id,
-        transcript || content,
+        {
+          genre: book?.genre || "essay",
+          prompt: transcript || content,
+          context: content,
+          chapter_title: activeChapter.title,
+        },
         { signal: abortControllerRef.current.signal }
       );
 

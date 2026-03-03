@@ -110,11 +110,11 @@ async def generate_cover(
             color_scheme=request.color_scheme,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"표지 생성에 실패했습니다: {str(e)}",
-        ) from e
+            detail="표지 생성에 실패했습니다.",
+        )
 
 
 @router.get(
@@ -178,8 +178,8 @@ async def preview_layout(
             supabase=supabase,
         )
         return result
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"레이아웃 미리보기 생성에 실패했습니다: {str(e)}",
-        ) from e
+            detail="레이아웃 미리보기 생성에 실패했습니다.",
+        )

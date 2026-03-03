@@ -107,7 +107,7 @@ class PublishingService:
             # 실패 상태 업데이트
             supabase.table(TABLE_EXPORTS).update({
                 "status": ExportStatusEnum.FAILED.value,
-                "error_message": str(e),
+                "error_message": "내보내기 처리 중 내부 오류가 발생했습니다.",
             }).eq("id", export_id).execute()
             raise
 

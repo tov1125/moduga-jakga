@@ -166,7 +166,7 @@ export default function DashboardPage() {
                   focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
                   group
                 "
-                aria-label={`${book.title} - ${genreLabel(book.genre)}, ${statusLabel(book.status)}, ${formatRelativeDate(book.updatedAt)} 수정`}
+                aria-label={`${book.title} - ${genreLabel(book.genre)}, ${statusLabel(book.status)}, ${formatRelativeDate(book.updated_at)} 수정`}
               >
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400">
                   {book.title}
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                   </p>
                 )}
                 <p className="text-sm text-gray-500 dark:text-gray-500">
-                  {book.chapters.length}개 챕터 | {formatRelativeDate(book.updatedAt)} 수정
+                  {book.chapter_count}개 챕터 | {formatRelativeDate(book.updated_at)} 수정
                 </p>
               </Link>
             </li>

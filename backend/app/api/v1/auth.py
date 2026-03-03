@@ -13,13 +13,29 @@ from app.core.config import Settings, get_settings
 from app.core.security import create_access_token
 from app.schemas.auth import (
     LoginRequest,
+    LoginResponse,
     LogoutResponse,
     SignUpRequest,
-    TokenResponse,
     UserResponse,
+    UserSettingsUpdate,
 )
 
 router = APIRouter()
+
+
+def _build_user_response(profile: dict[str, Any]) -> UserResponse:
+    """프로필 딕셔너리를 UserResponse로 변환합니다."""
+    return UserResponse(
+        id=profile["id"],
+        email=profile["email"],
+        display_name=profile["display_name"],
+        disability_type=profile["disability_type"],
+        voice_speed=profile.get("voice_speed", 1.0),
+        voice_type=profile.get("voice_type", "default"),
+        is_active=profile.get("is_active", True),
+        created_at=str(profile["created_at"]),
+        updated_at=str(profile["updated_at"]) if profile.get("updated_at") else None,
+    )
 
 
 @router.post(
@@ -70,37 +86,30 @@ async def signup(
             )
 
         profile = profile_response.data[0]
-        return UserResponse(
-            id=profile["id"],
-            email=profile["email"],
-            display_name=profile["display_name"],
-            disability_type=profile["disability_type"],
-            is_active=profile.get("is_active", True),
-            created_at=str(profile["created_at"]),
-        )
+        return _build_user_response(profile)
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"회원가입 처리 중 오류가 발생했습니다: {str(e)}",
-        ) from e
+            detail="회원가입 처리 중 오류가 발생했습니다.",
+        )
 
 
 @router.post(
     "/login",
-    response_model=TokenResponse,
+    response_model=LoginResponse,
     summary="로그인",
 )
 async def login(
     request: LoginRequest,
     supabase: Client = Depends(get_supabase),
     settings: Settings = Depends(get_settings),
-) -> TokenResponse:
+) -> LoginResponse:
     """
     이메일과 비밀번호로 로그인합니다.
-    인증 성공 시 JWT 액세스 토큰을 반환합니다.
+    인증 성공 시 사용자 정보와 JWT 액세스 토큰을 반환합니다.
     """
     try:
         # Supabase Auth로 로그인
@@ -119,6 +128,20 @@ async def login(
 
         user_id = auth_response.user.id
 
+        # 프로필 조회
+        profile_resp = (
+            supabase.table("profiles")
+            .select("*")
+            .eq("id", user_id)
+            .execute()
+        )
+
+        if not profile_resp.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="사용자 프로필을 찾을 수 없습니다.",
+            )
+
         # JWT 토큰 생성
         access_token = create_access_token(
             subject=user_id,
@@ -126,7 +149,8 @@ async def login(
             extra_claims={"email": request.email},
         )
 
-        return TokenResponse(
+        return LoginResponse(
+            user=_build_user_response(profile_resp.data[0]),
             access_token=access_token,
             token_type="bearer",
             expires_in=str(settings.JWT_EXPIRE_MINUTES),
@@ -134,11 +158,11 @@ async def login(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"로그인에 실패했습니다: {str(e)}",
-        ) from e
+            detail="로그인에 실패했습니다.",
+        )
 
 
 @router.post(
@@ -173,11 +197,50 @@ async def get_me(
     """
     현재 로그인한 사용자의 프로필 정보를 반환합니다.
     """
-    return UserResponse(
-        id=current_user["id"],
-        email=current_user["email"],
-        display_name=current_user["display_name"],
-        disability_type=current_user["disability_type"],
-        is_active=current_user.get("is_active", True),
-        created_at=str(current_user["created_at"]),
+    return _build_user_response(current_user)
+
+
+@router.patch(
+    "/settings",
+    response_model=UserResponse,
+    summary="사용자 설정 변경",
+)
+async def update_settings(
+    request: UserSettingsUpdate,
+    current_user: dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase),
+) -> UserResponse:
+    """
+    사용자 프로필 및 음성 설정을 업데이트합니다.
+    변경할 필드만 전송하면 됩니다.
+    """
+    update_data: dict[str, Any] = {}
+    if request.display_name is not None:
+        update_data["display_name"] = request.display_name
+    if request.disability_type is not None:
+        update_data["disability_type"] = request.disability_type.value
+    if request.voice_speed is not None:
+        update_data["voice_speed"] = request.voice_speed
+    if request.voice_type is not None:
+        update_data["voice_type"] = request.voice_type
+
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="수정할 내용이 없습니다.",
+        )
+
+    response = (
+        supabase.table("profiles")
+        .update(update_data)
+        .eq("id", current_user["id"])
+        .execute()
     )
+
+    if not response.data:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="설정 변경에 실패했습니다.",
+        )
+
+    return _build_user_response(response.data[0])
