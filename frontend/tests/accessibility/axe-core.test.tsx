@@ -20,7 +20,7 @@ vi.mock("@/hooks/useAnnouncer", () => ({
 describe("axe-core 자동 접근성 검증", () => {
   it("Button 컴포넌트에 접근성 위반이 없다", async () => {
     const { container } = render(
-      <Button variant="primary" size="md" onClick={() => {}}>
+      <Button variant="primary" size="default" onClick={() => {}}>
         테스트 버튼
       </Button>
     );
@@ -31,7 +31,7 @@ describe("axe-core 자동 접근성 검증", () => {
 
   it("Button 비활성 상태에 접근성 위반이 없다", async () => {
     const { container } = render(
-      <Button variant="primary" size="md" disabled>
+      <Button variant="primary" size="default" disabled>
         비활성 버튼
       </Button>
     );
@@ -61,13 +61,13 @@ describe("axe-core 자동 접근성 검증", () => {
   it("여러 Button variant에 접근성 위반이 없다", async () => {
     const { container } = render(
       <div>
-        <Button variant="primary" size="md" onClick={() => {}}>
+        <Button variant="primary" size="default" onClick={() => {}}>
           Primary
         </Button>
-        <Button variant="secondary" size="md" onClick={() => {}}>
+        <Button variant="secondary" size="default" onClick={() => {}}>
           Secondary
         </Button>
-        <Button variant="ghost" size="md" onClick={() => {}}>
+        <Button variant="ghost" size="default" onClick={() => {}}>
           Ghost
         </Button>
       </div>

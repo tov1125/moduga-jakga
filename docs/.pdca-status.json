@@ -1,67 +1,46 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-04T05:18:53.779Z",
+  "lastUpdated": "2026-03-04T17:45:26.435Z",
   "activeFeatures": [
-    "editing-service",
-    "v1",
-    "docx"
+    "sprint6-shadcn-complete",
+    "accessibility",
+    "book",
+    "editing",
+    "writing"
   ],
-  "primaryFeature": "editing-service",
+  "primaryFeature": "sprint6-shadcn-complete",
   "features": {
-    "tests": {
+    "sprint5-shadcn-gemini": {
       "phase": "archived",
-      "matchRate": 91,
-      "iterationCount": 1,
-      "startedAt": "2026-03-02T17:11:44.304Z",
-      "archivedAt": "2026-03-03T09:15:00.000Z",
-      "archivedTo": "docs/archive/2026-03/tests/"
+      "matchRate": 95.1,
+      "iterationCount": 0,
+      "startedAt": "2026-03-05T16:00:00.000Z",
+      "archivedAt": "2026-03-05T21:00:00.000Z",
+      "archivedTo": "docs/archive/2026-03/sprint5-shadcn-gemini/"
     },
-    "schemas": {
-      "phase": "archived",
-      "matchRate": 93,
-      "iterationCount": 1,
-      "startedAt": "2026-03-02T17:14:11.928Z",
-      "archivedAt": "2026-03-03T10:00:00.000Z",
-      "archivedTo": "docs/archive/2026-03/schemas/"
-    },
-    "frontend": {
-      "phase": "archived",
-      "matchRate": 98.3,
-      "iterationCount": 3,
-      "startedAt": "2026-03-02T17:59:11.529Z",
-      "archivedAt": "2026-03-03T15:30:00.000Z",
-      "archivedTo": "docs/archive/2026-03/frontend/"
-    },
-    "v1": {
-      "phase": "do",
-      "phaseNumber": 3,
+    "sprint6-shadcn-complete": {
+      "phase": "plan",
+      "phaseNumber": 1,
       "matchRate": null,
       "iterationCount": 0,
-      "requirements": [],
-      "documents": {},
-      "timestamps": {
-        "started": "2026-03-03T03:27:19.419Z",
-        "lastUpdated": "2026-03-03T06:00:40.043Z"
-      },
-      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/backend/app/api/v1/editing.py"
-    },
-    "editing-service": {
-      "phase": "do",
-      "phaseNumber": 3,
-      "matchRate": null,
-      "iterationCount": 0,
-      "requirements": [],
+      "requirements": [
+        "CoverDesigner: native select → shadcn Select",
+        "EditingPanel: 수동 탭 → shadcn Tabs + Badge",
+        "ExportPanel: native radio/checkbox → shadcn RadioGroup/Checkbox/Progress",
+        "ChapterList: ScrollArea 래핑",
+        "Modal.tsx 삭제",
+        "테스트 Props 수정 (size='md', variant='danger')"
+      ],
       "documents": {
-        "plan": "docs/01-plan/features/editing-service.plan.md",
-        "design": "docs/02-design/features/editing-service.design.md"
+        "plan": "docs/01-plan/features/sprint6-shadcn-complete.plan.md"
       },
       "timestamps": {
-        "started": "2026-03-03T04:30:00.000Z",
-        "lastUpdated": "2026-03-03T06:04:00.000Z"
+        "started": "2026-03-05T21:30:00.000Z",
+        "lastUpdated": "2026-03-05T21:30:00.000Z"
       },
-      "lastFile": "backend/app/api/v1/editing.py"
+      "lastFile": "docs/01-plan/features/sprint6-shadcn-complete.plan.md"
     },
-    "docx": {
+    "accessibility": {
       "phase": "do",
       "phaseNumber": 3,
       "matchRate": null,
@@ -69,10 +48,49 @@
       "requirements": [],
       "documents": {},
       "timestamps": {
-        "started": "2026-03-04T05:18:53.779Z",
-        "lastUpdated": "2026-03-04T05:18:53.779Z"
+        "started": "2026-03-04T17:38:11.806Z",
+        "lastUpdated": "2026-03-04T17:38:12.892Z"
       },
-      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/docx/generate_a0_report.py"
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/tests/accessibility/wcag-checklist.test.tsx"
+    },
+    "book": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-04T17:39:54.037Z",
+        "lastUpdated": "2026-03-04T17:41:48.851Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/book/ExportPanel.tsx"
+    },
+    "editing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-04T17:40:21.895Z",
+        "lastUpdated": "2026-03-04T17:45:26.435Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/editing/EditingPanel.tsx"
+    },
+    "writing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-04T17:41:58.901Z",
+        "lastUpdated": "2026-03-04T17:42:10.237Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/writing/ChapterList.tsx"
     }
   },
   "pipeline": {
@@ -83,54 +101,114 @@
   "session": {
     "startedAt": "2026-03-03T03:00:00.000Z",
     "onboardingCompleted": true,
-    "lastActivity": "2026-03-04T05:18:53.779Z"
+    "lastActivity": "2026-03-04T17:45:26.435Z"
   },
   "history": [
     {
-      "timestamp": "2026-03-03T03:27:19.419Z",
-      "feature": "v1",
+      "timestamp": "2026-03-05T19:15:00.000Z",
+      "feature": "cleanup",
+      "phase": "maintenance",
+      "action": "Cleaned up 8 features"
+    },
+    {
+      "timestamp": "2026-03-05T21:00:00.000Z",
+      "feature": "sprint5-shadcn-gemini",
+      "phase": "archived",
+      "action": "아카이브 완료 (95.1%)"
+    },
+    {
+      "timestamp": "2026-03-05T21:30:00.000Z",
+      "feature": "sprint6-shadcn-complete",
+      "phase": "plan",
+      "action": "Sprint 6 계획 수립 — shadcn 컴포넌트 완전 적용 (4 consumer + Modal 삭제 + 테스트 수정)"
+    },
+    {
+      "timestamp": "2026-03-04T17:38:11.806Z",
+      "feature": "accessibility",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T03:27:25.047Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:38:12.892Z",
+      "feature": "accessibility",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T03:27:30.107Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:39:54.037Z",
+      "feature": "book",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T03:27:36.941Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:40:04.403Z",
+      "feature": "book",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T05:58:18.092Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:40:11.378Z",
+      "feature": "book",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T06:00:23.879Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:40:21.895Z",
+      "feature": "editing",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-03T06:00:40.043Z",
-      "feature": "v1",
+      "timestamp": "2026-03-04T17:41:05.280Z",
+      "feature": "editing",
       "phase": "do",
       "action": "updated"
     },
     {
-      "timestamp": "2026-03-04T05:18:53.779Z",
-      "feature": "docx",
+      "timestamp": "2026-03-04T17:41:20.185Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:41:32.989Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:41:41.169Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:41:48.851Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:41:58.901Z",
+      "feature": "writing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:42:05.234Z",
+      "feature": "writing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:42:10.237Z",
+      "feature": "writing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T17:45:26.435Z",
+      "feature": "editing",
       "phase": "do",
       "action": "updated"
     }

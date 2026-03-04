@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { design } from "@/lib/api";
 import type { CoverTemplate } from "@/types/book";
@@ -131,25 +132,18 @@ export function CoverDesigner({
           >
             장르
           </label>
-          <select
-            id="cover-genre"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            className="
-              w-full px-4 py-3 min-h-touch
-              text-base text-gray-900 dark:text-gray-100
-              bg-white dark:bg-gray-800
-              border-2 border-gray-300 dark:border-gray-600
-              rounded-xl
-              focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
-            "
-          >
-            {GENRE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <Select value={genre} onValueChange={setGenre}>
+            <SelectTrigger id="cover-genre" className="w-full min-h-touch text-base">
+              <SelectValue placeholder="장르 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {GENRE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -159,25 +153,18 @@ export function CoverDesigner({
           >
             스타일
           </label>
-          <select
-            id="cover-style"
-            value={style}
-            onChange={(e) => setStyle(e.target.value)}
-            className="
-              w-full px-4 py-3 min-h-touch
-              text-base text-gray-900 dark:text-gray-100
-              bg-white dark:bg-gray-800
-              border-2 border-gray-300 dark:border-gray-600
-              rounded-xl
-              focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
-            "
-          >
-            {STYLE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <Select value={style} onValueChange={setStyle}>
+            <SelectTrigger id="cover-style" className="w-full min-h-touch text-base">
+              <SelectValue placeholder="스타일 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {STYLE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

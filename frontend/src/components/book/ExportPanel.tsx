@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
+import { Label } from "@/components/ui/label";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { publishing } from "@/lib/api";
 import type { ExportFormat, ExportStatus } from "@/types/book";
@@ -128,7 +132,7 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
         <legend className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
           파일 형식 선택
         </legend>
-        <div className="flex flex-col gap-3" role="radiogroup">
+        <RadioGroup value={selectedFormat} onValueChange={(v) => setSelectedFormat(v as ExportFormat)} className="flex flex-col gap-3">
           {(Object.keys(FORMAT_LABELS) as ExportFormat[]).map((format) => (
             <label
               key={format}
@@ -144,19 +148,11 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
                 }
               `}
             >
-              <input
-                type="radio"
-                name="export-format"
-                value={format}
-                checked={selectedFormat === format}
-                onChange={() => setSelectedFormat(format)}
-                className="mt-1 w-5 h-5 text-primary-600 focus:ring-primary-500"
-                aria-describedby={`format-desc-${format}`}
-              />
+              <RadioGroupItem value={format} id={`format-${format}`} className="mt-1" aria-describedby={`format-desc-${format}`} />
               <div>
-                <span className="text-base font-medium text-gray-900 dark:text-gray-100">
+                <Label htmlFor={`format-${format}`} className="text-base font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
                   {FORMAT_LABELS[format]}
-                </span>
+                </Label>
                 <p
                   id={`format-desc-${format}`}
                   className="text-sm text-gray-500 dark:text-gray-400 mt-0.5"
@@ -166,7 +162,7 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
               </div>
             </label>
           ))}
-        </div>
+        </RadioGroup>
       </fieldset>
 
       {/* Export options */}
@@ -174,28 +170,14 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           포함 항목
         </p>
-        <label className="flex items-center gap-3 cursor-pointer min-h-touch">
-          <input
-            type="checkbox"
-            checked={includeCover}
-            onChange={(e) => setIncludeCover(e.target.checked)}
-            className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
-          />
-          <span className="text-base text-gray-900 dark:text-gray-100">
-            표지 포함
-          </span>
-        </label>
-        <label className="flex items-center gap-3 cursor-pointer min-h-touch">
-          <input
-            type="checkbox"
-            checked={includeToc}
-            onChange={(e) => setIncludeToc(e.target.checked)}
-            className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
-          />
-          <span className="text-base text-gray-900 dark:text-gray-100">
-            목차 포함
-          </span>
-        </label>
+        <div className="flex items-center gap-3 min-h-touch">
+          <Checkbox id="include-cover" checked={includeCover} onCheckedChange={(checked) => setIncludeCover(checked === true)} />
+          <Label htmlFor="include-cover" className="text-base text-gray-900 dark:text-gray-100 cursor-pointer">표지 포함</Label>
+        </div>
+        <div className="flex items-center gap-3 min-h-touch">
+          <Checkbox id="include-toc" checked={includeToc} onCheckedChange={(checked) => setIncludeToc(checked === true)} />
+          <Label htmlFor="include-toc" className="text-base text-gray-900 dark:text-gray-100 cursor-pointer">목차 포함</Label>
+        </div>
       </div>
 
       {/* Export button */}
@@ -235,21 +217,11 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
 
           {/* Progress bar for processing */}
           {(exportStatus.status === "pending" || exportStatus.status === "processing") && (
-            <div
-              className="mt-3 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
-              role="progressbar"
+            <Progress
+              value={exportStatus.status === "processing" ? 50 : 10}
+              className="mt-3"
               aria-label="내보내기 진행률"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={exportStatus.status === "processing" ? 50 : 10}
-            >
-              <div
-                className="h-full bg-primary-500 rounded-full animate-pulse"
-                style={{
-                  width: exportStatus.status === "processing" ? "60%" : "10%",
-                }}
-              />
-            </div>
+            />
           )}
 
           {/* Download button */}

@@ -57,7 +57,7 @@ describe("WCAG Perceivable (인식 가능)", () => {
   });
 
   it("색상만으로 정보를 전달하지 않음 (위험 버튼은 텍스트도 제공)", () => {
-    render(<Button variant="danger">삭제</Button>);
+    render(<Button variant="destructive">삭제</Button>);
     const button = screen.getByRole("button", { name: "삭제" });
     // 빨간색뿐 아니라 "삭제" 텍스트로도 의미를 전달
     expect(button).toHaveTextContent("삭제");

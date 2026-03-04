@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 import type { Chapter } from "@/types/book";
 import { chapterStatusLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 
 interface ChapterListProps {
@@ -100,6 +101,7 @@ export function ChapterList({
         </Button>
       </div>
 
+      <ScrollArea className="max-h-96">
       <ol
         ref={listRef}
         role="listbox"
@@ -177,6 +179,7 @@ export function ChapterList({
           })
         )}
       </ol>
+      </ScrollArea>
     </nav>
   );
 }
