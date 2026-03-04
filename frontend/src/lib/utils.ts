@@ -1,4 +1,10 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 import type { BookGenre, BookStatus, ChapterStatus } from "@/types/book";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * Format a date string to a Korean-friendly format.

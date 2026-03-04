@@ -125,23 +125,16 @@ describe("EditingPanel 접근성", () => {
 
 describe("QualityReport 접근성", () => {
   const report = {
-    overallScore: 85,
-    grammarScore: 90,
-    styleScore: 80,
-    structureScore: 75,
-    readabilityScore: 88,
-    verdict: "pass" as const,
-    issues: [
-      {
-        severity: "warning" as const,
-        message: "문체 일관성이 부족합니다.",
-        location: "3단락",
-      },
-      {
-        severity: "info" as const,
-        message: "접속사 사용을 줄이면 좋겠습니다.",
-      },
+    book_id: "test-book-1",
+    overall_score: 85,
+    stage_results: [
+      { stage: "structure" as const, score: 75, issues_count: 2, feedback: "구조 개선 필요" },
+      { stage: "proofread" as const, score: 90, issues_count: 1, feedback: "맞춤법 양호" },
     ],
+    total_issues: 3,
+    summary: "전반적으로 양호한 품질입니다.",
+    recommendations: ["문체 일관성을 높이세요.", "접속사 사용을 줄이면 좋겠습니다."],
+    created_at: "2026-03-05T00:00:00Z",
   };
 
   it("보고서 영역에 role=region이 있다", () => {
@@ -162,15 +155,15 @@ describe("QualityReport 접근성", () => {
     expect(scoreLabels.length).toBeGreaterThan(0);
   });
 
-  it("문제 목록에 aria-label이 있다", () => {
+  it("권장 사항 목록에 aria-label이 있다", () => {
     render(<QualityReport report={report} />);
-    const list = screen.getByRole("list", { name: /문제 목록/ });
+    const list = screen.getByRole("list", { name: /권장 사항 목록/ });
     expect(list).toBeInTheDocument();
   });
 
-  it("심각도 배지에 aria-label이 있다", () => {
+  it("권장 배지가 표시된다", () => {
     render(<QualityReport report={report} />);
-    const badges = screen.getAllByLabelText(/주의|참고|오류/);
+    const badges = screen.getAllByText("권장");
     expect(badges.length).toBeGreaterThan(0);
   });
 });

@@ -78,7 +78,7 @@ export default function PublishPage() {
 
       {/* Export panel */}
       <section className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
-        <ExportPanel bookId={bookId} />
+        <ExportPanel bookId={bookId} bookTitle={book?.title} />
       </section>
 
       {/* Back to dashboard */}

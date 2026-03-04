@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
+import { useSupabase } from "@/hooks/useSupabase";
 import { auth } from "@/lib/api";
 
 /**
@@ -13,6 +14,7 @@ import { auth } from "@/lib/api";
 export default function LoginPage() {
   const router = useRouter();
   const { announceAssertive, announcePolite } = useAnnouncer();
+  const { refreshUser } = useSupabase();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +39,7 @@ export default function LoginPage() {
         if (response.data.access_token) {
           localStorage.setItem("access_token", response.data.access_token);
         }
+        await refreshUser();
         announcePolite("로그인되었습니다. 대시보드로 이동합니다.");
         router.push("/dashboard");
       } catch (err) {
@@ -50,7 +53,7 @@ export default function LoginPage() {
         setIsLoading(false);
       }
     },
-    [email, password, router, announceAssertive, announcePolite]
+    [email, password, router, announceAssertive, announcePolite, refreshUser]
   );
 
   return (

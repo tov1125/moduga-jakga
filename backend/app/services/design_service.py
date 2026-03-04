@@ -1,15 +1,20 @@
 """
 도서 디자인 서비스 모듈
-DALL-E를 활용한 표지 생성과 Typst 기반 내지 조판을 제공합니다.
+Google Gemini를 활용한 표지 생성과 Typst 기반 내지 조판을 제공합니다.
 """
 
+import asyncio
+import base64
 import logging
 import os
 import subprocess
 import tempfile
+import uuid
+from pathlib import Path
 from typing import Any
 
-from openai import AsyncOpenAI
+from google import genai
+from google.genai import types
 from supabase import Client
 
 from app.core.config import Settings
@@ -24,7 +29,9 @@ from app.schemas.design import (
 
 logger = logging.getLogger(__name__)
 
-# 표지 스타일별 DALL-E 프롬프트 키워드
+COVERS_DIR = Path(__file__).resolve().parent.parent.parent / "static" / "covers"
+
+# 표지 스타일별 프롬프트 키워드
 STYLE_KEYWORDS: dict[str, str] = {
     CoverStyle.MINIMALIST.value: "minimalist design, clean layout, lots of white space, elegant typography",
     CoverStyle.ILLUSTRATED.value: "hand-drawn illustration, artistic, warm colors, detailed artwork",
@@ -33,7 +40,7 @@ STYLE_KEYWORDS: dict[str, str] = {
     CoverStyle.ABSTRACT.value: "abstract art, geometric shapes, modern design, contemporary",
 }
 
-# 장르별 DALL-E 프롬프트 키워드
+# 장르별 프롬프트 키워드
 GENRE_KEYWORDS: dict[str, str] = {
     Genre.ESSAY.value: "peaceful, contemplative, nature-inspired, subtle colors",
     Genre.NOVEL.value: "dramatic, atmospheric, storytelling, evocative",
@@ -79,7 +86,7 @@ class DesignService:
     """도서 디자인 서비스"""
 
     def __init__(self, settings: Settings) -> None:
-        self._client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self._gemini = genai.Client(api_key=settings.GOOGLE_API_KEY)
 
     async def generate_cover(
         self,
@@ -91,7 +98,7 @@ class DesignService:
         color_scheme: str = "",
     ) -> CoverGenerateResponse:
         """
-        DALL-E를 사용하여 도서 표지 이미지를 생성합니다.
+        Google Gemini를 사용하여 도서 표지 이미지를 생성합니다.
 
         Args:
             book_title: 책 제목
@@ -104,7 +111,7 @@ class DesignService:
         Returns:
             생성된 표지 정보 (이미지 URL, 사용된 프롬프트, 스타일)
         """
-        # DALL-E 프롬프트 구성
+        # Gemini 프롬프트 구성
         prompt_parts = [
             "Book cover design for a Korean book.",
             f'Title: "{book_title}"',
@@ -127,15 +134,29 @@ class DesignService:
         prompt = " ".join(prompt_parts)
 
         try:
-            response = await self._client.images.generate(
-                model="dall-e-3",
-                prompt=prompt,
-                size="1024x1792",  # 세로 비율 (표지 비율)
-                quality="standard",
-                n=1,
+            response = await asyncio.to_thread(
+                self._gemini.models.generate_content,
+                model="gemini-2.5-flash-image",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_modalities=["image", "text"],
+                ),
             )
 
-            image_url = response.data[0].url or ""
+            image_data: bytes | None = None
+            for part in response.candidates[0].content.parts:
+                if part.inline_data is not None:
+                    image_data = part.inline_data.data
+                    break
+
+            if image_data is None:
+                raise RuntimeError("Gemini 응답에 이미지가 포함되지 않았습니다.")
+
+            COVERS_DIR.mkdir(parents=True, exist_ok=True)
+            filename = f"{uuid.uuid4().hex}.png"
+            filepath = COVERS_DIR / filename
+            filepath.write_bytes(image_data)
+            image_url = f"/static/covers/{filename}"
 
             return CoverGenerateResponse(
                 image_url=image_url,

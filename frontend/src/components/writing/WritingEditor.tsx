@@ -100,7 +100,7 @@ export function WritingEditor({
           </span>
           <Button
             variant="primary"
-            size="md"
+            size="default"
             onClick={handleSave}
             isLoading={isSaving}
             aria-label="저장하기 (Ctrl+S)"

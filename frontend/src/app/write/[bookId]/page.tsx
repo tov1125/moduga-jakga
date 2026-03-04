@@ -49,10 +49,11 @@ export default function WritingWorkspacePage() {
           chaptersApi.list(bookId),
         ]);
         setBook(bookRes.data);
-        setChapters(chaptersRes.data);
-        if (chaptersRes.data.length > 0) {
-          setActiveChapter(chaptersRes.data[0]);
-          setContent(chaptersRes.data[0].content);
+        const chapterList = chaptersRes.data.chapters;
+        setChapters(chapterList);
+        if (chapterList.length > 0) {
+          setActiveChapter(chapterList[0]);
+          setContent(chapterList[0].content);
         }
         announcePolite(`${bookRes.data.title} 작업 공간이 열렸습니다`);
       } catch {
@@ -261,7 +262,7 @@ export default function WritingWorkspacePage() {
           <div className="flex items-center gap-3 flex-wrap">
             <Button
               variant="primary"
-              size="md"
+              size="default"
               onClick={handleGenerate}
               disabled={isStreaming || !activeChapter}
               isLoading={isStreaming}
@@ -271,8 +272,8 @@ export default function WritingWorkspacePage() {
             </Button>
             {isStreaming && (
               <Button
-                variant="danger"
-                size="md"
+                variant="destructive"
+                size="default"
                 onClick={handleStopGeneration}
                 aria-label="AI 글 생성 중단"
               >

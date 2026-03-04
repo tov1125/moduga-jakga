@@ -121,7 +121,7 @@ export function EditingPanel({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <Button
             variant="secondary"
-            size="md"
+            size="default"
             onClick={() => onRunAnalysis(activeStage)}
             isLoading={isLoading}
             aria-label={`${STAGE_LABELS[activeStage]} 분석 실행`}

@@ -8,6 +8,7 @@ import type { ExportFormat, ExportStatus } from "@/types/book";
 
 interface ExportPanelProps {
   bookId: string;
+  bookTitle?: string;
   className?: string;
 }
 
@@ -27,9 +28,11 @@ const FORMAT_DESCRIPTIONS: Record<ExportFormat, string> = {
  * Export/download panel for books.
  * Supports DOCX, PDF, EPUB formats with progress tracking.
  */
-export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
+export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelProps) {
   const { announcePolite, announceAssertive } = useAnnouncer();
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("pdf");
+  const [includeCover, setIncludeCover] = useState(true);
+  const [includeToc, setIncludeToc] = useState(true);
   const [exportStatus, setExportStatus] = useState<ExportStatus | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +43,12 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
     announcePolite(`${FORMAT_LABELS[selectedFormat]} 형식으로 내보내기를 시작합니다`);
 
     try {
-      const response = await publishing.exportBook({ book_id: bookId, format: selectedFormat });
+      const response = await publishing.exportBook({
+        book_id: bookId,
+        format: selectedFormat,
+        include_cover: includeCover,
+        include_toc: includeToc,
+      });
       setExportStatus({
         export_id: response.data.export_id,
         book_id: response.data.book_id,
@@ -56,7 +64,7 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
       announceAssertive("내보내기 실패");
       setIsExporting(false);
     }
-  }, [bookId, selectedFormat, announcePolite, announceAssertive]);
+  }, [bookId, selectedFormat, includeCover, includeToc, announcePolite, announceAssertive]);
 
   // Poll export status
   useEffect(() => {
@@ -94,7 +102,8 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `export.${exportStatus.format}`;
+      const fileName = bookTitle ? `${bookTitle}.${exportStatus.format}` : `export.${exportStatus.format}`;
+      a.download = fileName;
       a.click();
       URL.revokeObjectURL(url);
       announcePolite("다운로드가 시작되었습니다");
@@ -102,7 +111,7 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
       setError("다운로드에 실패했습니다");
       announceAssertive("다운로드 실패");
     }
-  }, [exportStatus, announcePolite, announceAssertive]);
+  }, [exportStatus, bookTitle, announcePolite, announceAssertive]);
 
   return (
     <div
@@ -159,6 +168,35 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
           ))}
         </div>
       </fieldset>
+
+      {/* Export options */}
+      <div className="flex flex-col gap-3">
+        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          포함 항목
+        </p>
+        <label className="flex items-center gap-3 cursor-pointer min-h-touch">
+          <input
+            type="checkbox"
+            checked={includeCover}
+            onChange={(e) => setIncludeCover(e.target.checked)}
+            className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+          />
+          <span className="text-base text-gray-900 dark:text-gray-100">
+            표지 포함
+          </span>
+        </label>
+        <label className="flex items-center gap-3 cursor-pointer min-h-touch">
+          <input
+            type="checkbox"
+            checked={includeToc}
+            onChange={(e) => setIncludeToc(e.target.checked)}
+            className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+          />
+          <span className="text-base text-gray-900 dark:text-gray-100">
+            목차 포함
+          </span>
+        </label>
+      </div>
 
       {/* Export button */}
       <Button
@@ -218,7 +256,7 @@ export function ExportPanel({ bookId, className = "" }: ExportPanelProps) {
           {exportStatus.status === "completed" && (
             <Button
               variant="primary"
-              size="md"
+              size="default"
               onClick={handleDownload}
               aria-label="파일 다운로드"
               className="mt-3"

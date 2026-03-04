@@ -7,12 +7,11 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/client";
 import type { User } from "@/types/user";
+import { auth } from "@/lib/api";
 
 interface SupabaseContextValue {
-  session: Session | null;
+  session: null;
   user: User | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
@@ -26,87 +25,56 @@ interface SupabaseProviderProps {
 }
 
 /**
- * Provides Supabase session state and user information to the app.
+ * Provides auth state and user information to the app.
+ * Uses Backend JWT stored in localStorage + /auth/me endpoint.
  */
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const supabase = createClient();
-
   const refreshUser = useCallback(async () => {
-    try {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      setSession(currentSession);
+    if (typeof window === "undefined") {
+      setIsLoading(false);
+      return;
+    }
 
-      if (currentSession?.user) {
-        // Map Supabase user to our User type
-        const supabaseUser = currentSession.user;
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || "",
-          display_name: supabaseUser.user_metadata?.display_name || "",
-          disability_type: supabaseUser.user_metadata?.disability_type || "none",
-          voice_speed: supabaseUser.user_metadata?.voice_speed || 1.0,
-          voice_type: supabaseUser.user_metadata?.voice_type || "default",
-          is_active: true,
-          created_at: supabaseUser.created_at,
-          updated_at: supabaseUser.updated_at || null,
-        });
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Failed to refresh user:", error);
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await auth.me();
+      setUser(response.data);
+    } catch {
+      localStorage.removeItem("access_token");
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
-  }, [supabase.auth]);
+  }, []);
 
   useEffect(() => {
     refreshUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session?.user) {
-        const supabaseUser = session.user;
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || "",
-          display_name: supabaseUser.user_metadata?.display_name || "",
-          disability_type: supabaseUser.user_metadata?.disability_type || "none",
-          voice_speed: supabaseUser.user_metadata?.voice_speed || 1.0,
-          voice_type: supabaseUser.user_metadata?.voice_type || "default",
-          is_active: true,
-          created_at: supabaseUser.created_at,
-          updated_at: supabaseUser.updated_at || null,
-        });
-      } else {
-        setUser(null);
-      }
-      setIsLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [refreshUser, supabase.auth]);
+  }, [refreshUser]);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setSession(null);
-    setUser(null);
+    try {
+      await auth.logout();
+    } catch {
+      // logout 실패해도 로컬 상태는 정리
+    }
     if (typeof window !== "undefined") {
       localStorage.removeItem("access_token");
     }
-  }, [supabase.auth]);
+    setUser(null);
+  }, []);
 
   return (
     <SupabaseContext.Provider
-      value={{ session, user, isLoading, signOut, refreshUser }}
+      value={{ session: null, user, isLoading, signOut, refreshUser }}
     >
       {children}
     </SupabaseContext.Provider>

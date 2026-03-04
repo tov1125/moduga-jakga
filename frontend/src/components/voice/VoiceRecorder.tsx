@@ -42,7 +42,7 @@ export function VoiceRecorder({ onTranscript, className = "" }: VoiceRecorderPro
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       {/* Record button */}
       <Button
-        variant={isRecording ? "danger" : "primary"}
+        variant={isRecording ? "destructive" : "primary"}
         size="lg"
         onClick={handleToggleRecording}
         aria-label={isRecording ? "녹음 중지" : "녹음 시작"}

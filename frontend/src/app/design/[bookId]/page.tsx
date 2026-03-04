@@ -21,6 +21,8 @@ export default function DesignPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [fontSize, setFontSize] = useState(16);
   const [fontFamily, setFontFamily] = useState("default");
+  const [pageSize, setPageSize] = useState("B5");
+  const [lineSpacing, setLineSpacing] = useState(1.6);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
@@ -44,7 +46,9 @@ export default function DesignPage() {
     try {
       const response = await designApi.layoutPreview({
         book_id: bookId,
+        page_size: pageSize,
         font_size: fontSize,
+        line_spacing: lineSpacing,
       });
       setPreviewUrl(response.data.preview_url);
       announcePolite("레이아웃 미리보기가 준비되었습니다");
@@ -53,7 +57,7 @@ export default function DesignPage() {
     } finally {
       setIsPreviewLoading(false);
     }
-  }, [bookId, fontSize, fontFamily, announcePolite, announceAssertive]);
+  }, [bookId, pageSize, fontSize, lineSpacing, announcePolite, announceAssertive]);
 
   if (isLoading) {
     return (
@@ -87,8 +91,9 @@ export default function DesignPage() {
       {/* Cover Design */}
       <section className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
         <CoverDesigner
-          bookId={bookId}
           bookTitle={book?.title || ""}
+          authorName=""
+          bookGenre={book?.genre}
           currentCoverUrl={undefined}
         />
       </section>
@@ -103,31 +108,32 @@ export default function DesignPage() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Font size */}
+          {/* Page size */}
           <div className="flex flex-col gap-2">
             <label
-              htmlFor="font-size"
+              htmlFor="page-size"
               className="text-base font-medium text-gray-900 dark:text-gray-100"
             >
-              글자 크기: {fontSize}pt
+              판형
             </label>
-            <input
-              id="font-size"
-              type="range"
-              min={12}
-              max={24}
-              value={fontSize}
-              onChange={(e) => setFontSize(Number(e.target.value))}
-              aria-valuenow={fontSize}
-              aria-valuemin={12}
-              aria-valuemax={24}
-              aria-label={`글자 크기: ${fontSize}포인트`}
-              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-              <span>12pt</span>
-              <span>24pt</span>
-            </div>
+            <select
+              id="page-size"
+              value={pageSize}
+              onChange={(e) => setPageSize(e.target.value)}
+              className="
+                w-full px-4 py-3 min-h-touch
+                text-base text-gray-900 dark:text-gray-100
+                bg-white dark:bg-gray-800
+                border-2 border-gray-300 dark:border-gray-600
+                rounded-xl
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+              "
+            >
+              <option value="A5">A5 (148×210mm)</option>
+              <option value="B5">신국판 B5 (152×225mm)</option>
+              <option value="A4">A4 (210×297mm)</option>
+              <option value="paperback">46판 (127×188mm)</option>
+            </select>
           </div>
 
           {/* Font family */}
@@ -157,13 +163,68 @@ export default function DesignPage() {
               <option value="noto-serif">Noto Serif Korean</option>
             </select>
           </div>
+
+          {/* Font size */}
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="font-size"
+              className="text-base font-medium text-gray-900 dark:text-gray-100"
+            >
+              글자 크기: {fontSize}pt
+            </label>
+            <input
+              id="font-size"
+              type="range"
+              min={12}
+              max={24}
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+              aria-valuenow={fontSize}
+              aria-valuemin={12}
+              aria-valuemax={24}
+              aria-label={`글자 크기: ${fontSize}포인트`}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+              <span>12pt</span>
+              <span>24pt</span>
+            </div>
+          </div>
+
+          {/* Line spacing */}
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="line-spacing"
+              className="text-base font-medium text-gray-900 dark:text-gray-100"
+            >
+              줄 간격: {lineSpacing.toFixed(1)}
+            </label>
+            <input
+              id="line-spacing"
+              type="range"
+              min={1.0}
+              max={2.5}
+              step={0.1}
+              value={lineSpacing}
+              onChange={(e) => setLineSpacing(Number(e.target.value))}
+              aria-valuenow={lineSpacing}
+              aria-valuemin={1.0}
+              aria-valuemax={2.5}
+              aria-label={`줄 간격: ${lineSpacing.toFixed(1)}배`}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+              <span>1.0</span>
+              <span>2.5</span>
+            </div>
+          </div>
         </div>
 
         {/* Preview button */}
         <div className="mt-6">
           <Button
             variant="secondary"
-            size="md"
+            size="default"
             onClick={handlePreviewLayout}
             isLoading={isPreviewLoading}
             aria-label="레이아웃 미리보기"

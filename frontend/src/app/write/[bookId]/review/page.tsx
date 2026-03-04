@@ -43,7 +43,7 @@ export default function ReviewPage() {
           chaptersApi.list(bookId),
         ]);
         setBook(bookRes.data);
-        setChapters(chaptersRes.data);
+        setChapters(chaptersRes.data.chapters);
       } catch {
         announceAssertive("데이터를 불러올 수 없습니다");
       } finally {
@@ -165,7 +165,7 @@ export default function ReviewPage() {
           </h2>
           <Button
             variant="secondary"
-            size="md"
+            size="default"
             onClick={handleFullReview}
             isLoading={isReviewing}
             aria-label="전체 검토 실행"

@@ -150,7 +150,7 @@ export const books = {
 // ─── Chapters ────────────────────────────────────────────────────────────────
 
 export const chapters = {
-  async list(bookId: string): Promise<ApiResponse<Chapter[]>> {
+  async list(bookId: string): Promise<ApiResponse<{ chapters: Chapter[]; total: number }>> {
     return apiFetch(`/books/${bookId}/chapters`);
   },
 
@@ -491,13 +491,17 @@ export const tts = {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+    // Convert FE speed (0.5~2.0, 1.0=normal) to BE CLOVA speed (-5~5, 0=normal)
+    const feSpeed = speed ?? 1.0;
+    const beSpeed = Math.max(-5, Math.min(5, (feSpeed - 1.0) * 5.0));
+
     const response = await fetch(`${API_BASE}/tts/synthesize`, {
       method: "POST",
       headers,
       body: JSON.stringify({
         text,
         voice_id: voiceId ?? "nara",
-        speed: speed ?? 0.0,
+        speed: beSpeed,
       }),
     });
 

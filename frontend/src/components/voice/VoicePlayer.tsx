@@ -54,7 +54,7 @@ export function VoicePlayer({ text, className = "" }: VoicePlayerProps) {
         {/* Skip backward */}
         <Button
           variant="secondary"
-          size="md"
+          size="default"
           onClick={skipBackward}
           disabled={!isPlaying && !isPaused}
           aria-label="이전 문장으로 이동"
@@ -109,7 +109,7 @@ export function VoicePlayer({ text, className = "" }: VoicePlayerProps) {
         {/* Skip forward */}
         <Button
           variant="secondary"
-          size="md"
+          size="default"
           onClick={skipForward}
           disabled={!isPlaying && !isPaused}
           aria-label="다음 문장으로 이동"
@@ -129,7 +129,7 @@ export function VoicePlayer({ text, className = "" }: VoicePlayerProps) {
         {(isPlaying || isPaused) && (
           <Button
             variant="ghost"
-            size="md"
+            size="default"
             onClick={stop}
             aria-label="낭독 중지"
           >

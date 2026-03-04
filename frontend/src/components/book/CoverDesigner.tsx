@@ -6,9 +6,28 @@ import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { design } from "@/lib/api";
 import type { CoverTemplate } from "@/types/book";
 
+const GENRE_OPTIONS = [
+  { value: "essay", label: "에세이" },
+  { value: "novel", label: "소설" },
+  { value: "poem", label: "시" },
+  { value: "autobiography", label: "자서전" },
+  { value: "children", label: "동화" },
+  { value: "non_fiction", label: "논픽션" },
+  { value: "other", label: "기타" },
+] as const;
+
+const STYLE_OPTIONS = [
+  { value: "minimalist", label: "미니멀리즘" },
+  { value: "illustrated", label: "일러스트" },
+  { value: "photographic", label: "사진 기반" },
+  { value: "typography", label: "타이포그래피" },
+  { value: "abstract", label: "추상적" },
+] as const;
+
 interface CoverDesignerProps {
-  bookId: string;
   bookTitle: string;
+  authorName?: string;
+  bookGenre?: string;
   currentCoverUrl?: string | null;
   className?: string;
 }
@@ -19,8 +38,9 @@ interface CoverDesignerProps {
  * and viewing cover descriptions via TTS.
  */
 export function CoverDesigner({
-  bookId,
   bookTitle,
+  authorName = "",
+  bookGenre = "",
   currentCoverUrl,
   className = "",
 }: CoverDesignerProps) {
@@ -28,6 +48,8 @@ export function CoverDesigner({
   const [coverUrl, setCoverUrl] = useState(currentCoverUrl || "");
   const [templates, setTemplates] = useState<CoverTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [genre, setGenre] = useState(bookGenre || "essay");
+  const [style, setStyle] = useState("minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,9 +77,9 @@ export function CoverDesigner({
     try {
       const response = await design.generateCover({
         book_title: bookTitle,
-        author_name: "",
-        genre: "",
-        style: selectedTemplate || undefined,
+        author_name: authorName || "작가",
+        genre,
+        style,
       });
       setCoverUrl(response.data.image_url);
       announcePolite("새 표지가 생성되었습니다");
@@ -67,7 +89,7 @@ export function CoverDesigner({
     } finally {
       setIsGenerating(false);
     }
-  }, [bookId, selectedTemplate, announcePolite, announceAssertive]);
+  }, [bookTitle, authorName, genre, style, announcePolite, announceAssertive]);
 
   return (
     <div
@@ -98,6 +120,65 @@ export function CoverDesigner({
             </p>
           </div>
         )}
+      </div>
+
+      {/* Genre & Style selection */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="cover-genre"
+            className="text-base font-medium text-gray-900 dark:text-gray-100"
+          >
+            장르
+          </label>
+          <select
+            id="cover-genre"
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+            className="
+              w-full px-4 py-3 min-h-touch
+              text-base text-gray-900 dark:text-gray-100
+              bg-white dark:bg-gray-800
+              border-2 border-gray-300 dark:border-gray-600
+              rounded-xl
+              focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            "
+          >
+            {GENRE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="cover-style"
+            className="text-base font-medium text-gray-900 dark:text-gray-100"
+          >
+            스타일
+          </label>
+          <select
+            id="cover-style"
+            value={style}
+            onChange={(e) => setStyle(e.target.value)}
+            className="
+              w-full px-4 py-3 min-h-touch
+              text-base text-gray-900 dark:text-gray-100
+              bg-white dark:bg-gray-800
+              border-2 border-gray-300 dark:border-gray-600
+              rounded-xl
+              focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            "
+          >
+            {STYLE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Generate button */}

@@ -49,9 +49,10 @@ export default function EditingPage() {
           chaptersApi.list(bookId),
         ]);
         setBook(bookRes.data);
-        setChapters(chaptersRes.data);
-        if (chaptersRes.data.length > 0) {
-          setActiveChapter(chaptersRes.data[0]);
+        const chapterList = chaptersRes.data.chapters;
+        setChapters(chapterList);
+        if (chapterList.length > 0) {
+          setActiveChapter(chapterList[0]);
         }
       } catch {
         announceAssertive("편집 데이터를 불러올 수 없습니다");
@@ -275,7 +276,7 @@ export default function EditingPage() {
           </h2>
           <Button
             variant="secondary"
-            size="md"
+            size="default"
             onClick={handleLoadReport}
             isLoading={isLoadingReport}
             aria-label="품질 보고서 생성"

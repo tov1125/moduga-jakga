@@ -6,8 +6,11 @@
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.router import api_v1_router
 from app.core.config import get_settings
@@ -47,6 +50,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 정적 파일 서빙 (AI 생성 표지 이미지 등)
+_static_dir = Path(__file__).resolve().parent.parent / "static"
+_static_dir.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
 
 # API v1 라우터 마운트
 app.include_router(api_v1_router, prefix="/api/v1")

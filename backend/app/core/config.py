@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # OpenAI 설정
     OPENAI_API_KEY: str
 
+    # Google Gemini 설정 (표지 이미지 생성)
+    GOOGLE_API_KEY: str = ""
+
     # CLOVA Speech (STT) 설정
     CLOVA_SPEECH_SECRET: str
     CLOVA_SPEECH_INVOKE_URL: str
