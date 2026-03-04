@@ -1,8 +1,12 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-03T03:00:00.000Z",
-  "activeFeatures": [],
-  "primaryFeature": null,
+  "lastUpdated": "2026-03-04T05:18:53.779Z",
+  "activeFeatures": [
+    "editing-service",
+    "v1",
+    "docx"
+  ],
+  "primaryFeature": "editing-service",
   "features": {
     "tests": {
       "phase": "archived",
@@ -27,6 +31,48 @@
       "startedAt": "2026-03-02T17:59:11.529Z",
       "archivedAt": "2026-03-03T15:30:00.000Z",
       "archivedTo": "docs/archive/2026-03/frontend/"
+    },
+    "v1": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-03T03:27:19.419Z",
+        "lastUpdated": "2026-03-03T06:00:40.043Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/backend/app/api/v1/editing.py"
+    },
+    "editing-service": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {
+        "plan": "docs/01-plan/features/editing-service.plan.md",
+        "design": "docs/02-design/features/editing-service.design.md"
+      },
+      "timestamps": {
+        "started": "2026-03-03T04:30:00.000Z",
+        "lastUpdated": "2026-03-03T06:04:00.000Z"
+      },
+      "lastFile": "backend/app/api/v1/editing.py"
+    },
+    "docx": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-04T05:18:53.779Z",
+        "lastUpdated": "2026-03-04T05:18:53.779Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/docx/generate_a0_report.py"
     }
   },
   "pipeline": {
@@ -37,7 +83,56 @@
   "session": {
     "startedAt": "2026-03-03T03:00:00.000Z",
     "onboardingCompleted": true,
-    "lastActivity": "2026-03-03T03:00:00.000Z"
+    "lastActivity": "2026-03-04T05:18:53.779Z"
   },
-  "history": []
+  "history": [
+    {
+      "timestamp": "2026-03-03T03:27:19.419Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T03:27:25.047Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T03:27:30.107Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T03:27:36.941Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T05:58:18.092Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T06:00:23.879Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-03T06:00:40.043Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-04T05:18:53.779Z",
+      "feature": "docx",
+      "phase": "do",
+      "action": "updated"
+    }
+  ]
 }

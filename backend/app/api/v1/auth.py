@@ -10,6 +10,7 @@ from supabase import Client
 
 from app.api.deps import get_current_user, get_supabase
 from app.core.config import Settings, get_settings
+from app.core.database import get_supabase_admin
 from app.core.security import create_access_token
 from app.schemas.auth import (
     LoginRequest,
@@ -47,6 +48,7 @@ def _build_user_response(profile: dict[str, Any]) -> UserResponse:
 async def signup(
     request: SignUpRequest,
     supabase: Client = Depends(get_supabase),
+    admin_client: Client = Depends(get_supabase_admin),
     settings: Settings = Depends(get_settings),
 ) -> UserResponse:
     """
@@ -77,7 +79,7 @@ async def signup(
             "display_name": request.display_name,
             "disability_type": request.disability_type.value,
         }
-        profile_response = supabase.table("profiles").insert(profile_data).execute()
+        profile_response = admin_client.table("profiles").insert(profile_data).execute()
 
         if not profile_response.data:
             raise HTTPException(
@@ -90,10 +92,10 @@ async def signup(
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="회원가입 처리 중 오류가 발생했습니다.",
+            detail=f"회원가입 처리 중 오류가 발생했습니다: {e}",
         )
 
 

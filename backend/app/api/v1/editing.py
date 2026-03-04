@@ -10,12 +10,14 @@ from supabase import Client
 
 from app.api.deps import get_current_user, get_supabase
 from app.core.config import Settings, get_settings
-from app.models.base import TABLE_BOOKS, TABLE_CHAPTERS
+from app.models.base import TABLE_BOOKS, TABLE_CHAPTERS, TABLE_EDITING_REPORTS
 from app.schemas.editing import (
+    EditingStage,
     FullReviewRequest,
     ProofreadRequest,
     ProofreadResult,
     QualityReport,
+    StageResult,
     StyleCheckRequest,
     StyleCheckResult,
     StructureReviewRequest,
@@ -198,6 +200,34 @@ async def full_review(
             chapters=chapters_resp.data,
             include_stages=request.include_stages,
         )
+
+        # 4단계별 점수 추출
+        stage_scores: dict[str, float] = {}
+        for sr in report.stage_results:
+            stage_scores[sr.stage.value] = sr.score
+
+        # editing_reports 테이블에 저장
+        insert_data = {
+            "book_id": request.book_id,
+            "user_id": current_user["id"],
+            "stage": "full_review",
+            "structure_score": stage_scores.get("structure", 0.0),
+            "style_score": stage_scores.get("content", 0.0),
+            "spelling_score": stage_scores.get("proofread", 0.0),
+            "readability_score": stage_scores.get("final", 0.0),
+            "overall_score": report.overall_score,
+            "issues": {
+                "stage_results": [sr.model_dump() for sr in report.stage_results],
+                "total_issues": report.total_issues,
+                "summary": report.summary,
+            },
+            "suggestions": report.recommendations,
+        }
+        try:
+            supabase.table(TABLE_EDITING_REPORTS).insert(insert_data).execute()
+        except Exception:
+            pass  # DB 저장 실패해도 report는 반환
+
         return report
     except Exception:
         raise HTTPException(
@@ -252,13 +282,27 @@ async def get_quality_report(
         )
 
     report_data = report_resp.data[0]
+    issues_data = report_data.get("issues", {})
+    if isinstance(issues_data, list):
+        issues_data = {}
+    stage_results_raw = issues_data.get("stage_results", [])
+
+    stage_results = [
+        StageResult(
+            stage=EditingStage(sr["stage"]),
+            score=sr["score"],
+            issues_count=sr["issues_count"],
+            feedback=sr["feedback"],
+        )
+        for sr in stage_results_raw
+    ]
 
     return QualityReport(
         book_id=report_data["book_id"],
-        overall_score=report_data["overall_score"],
-        stage_results=report_data.get("stage_results", []),
-        total_issues=report_data.get("total_issues", 0),
-        summary=report_data.get("summary", ""),
-        recommendations=report_data.get("recommendations", []),
+        overall_score=report_data.get("overall_score", 0.0),
+        stage_results=stage_results,
+        total_issues=issues_data.get("total_issues", 0),
+        summary=issues_data.get("summary", ""),
+        recommendations=report_data.get("suggestions", []),
         created_at=str(report_data["created_at"]),
     )
