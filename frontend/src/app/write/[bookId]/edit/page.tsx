@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { EditingPanel } from "@/components/editing/EditingPanel";
 import { QualityReport } from "@/components/editing/QualityReport";
@@ -23,6 +23,33 @@ import Link from "next/link";
 type EditingStage = "structure" | "content" | "proofread" | "final";
 
 /**
+ * Apply a single suggestion to the chapter text.
+ * Returns the updated text, or null if no change was made.
+ */
+function applySuggestion(
+  text: string,
+  suggestion: EditSuggestion
+): string | null {
+  // Structure suggestions are advisory — no text replacement
+  if (suggestion.type === "structure") return null;
+
+  // Position-based replacement (proofread/final with valid positions)
+  if (suggestion.position.start > 0 || suggestion.position.end > 0) {
+    const { start, end } = suggestion.position;
+    if (start >= 0 && end > start && end <= text.length) {
+      return text.slice(0, start) + suggestion.suggested + text.slice(end);
+    }
+  }
+
+  // String-search replacement (style/content with original text)
+  if (suggestion.original && text.includes(suggestion.original)) {
+    return text.replace(suggestion.original, suggestion.suggested);
+  }
+
+  return null;
+}
+
+/**
  * Editing page with 4-stage editing interface.
  */
 export default function EditingPage() {
@@ -39,6 +66,34 @@ export default function EditingPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Debounced save — 500ms delay to avoid request storms on rapid accepts */
+  const debouncedSave = useCallback(
+    (chapterId: string, content: string) => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = setTimeout(async () => {
+        setIsSaving(true);
+        try {
+          await chaptersApi.update(bookId, chapterId, { content });
+          announcePolite("저장되었습니다");
+        } catch {
+          announceAssertive("저장에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+          setIsSaving(false);
+        }
+      }, 500);
+    },
+    [bookId, announcePolite, announceAssertive]
+  );
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   // Load book data
   useEffect(() => {
@@ -129,12 +184,66 @@ export default function EditingPage() {
     [bookId, activeChapter, chapters, announcePolite, announceAssertive]
   );
 
-  // Accept suggestion
-  const handleAcceptSuggestion = useCallback((suggestionId: string) => {
-    setSuggestions((prev) =>
-      prev.map((s) => (s.id === suggestionId ? { ...s, accepted: true } : s))
-    );
-  }, []);
+  // Accept suggestion — apply text change + save
+  const handleAcceptSuggestion = useCallback(
+    (suggestionId: string) => {
+      if (!activeChapter) return;
+
+      const suggestion = suggestions.find((s) => s.id === suggestionId);
+      if (!suggestion) return;
+
+      const updated = applySuggestion(activeChapter.content, suggestion);
+
+      if (updated !== null) {
+        // Update local chapter content
+        const newChapter = { ...activeChapter, content: updated };
+        setActiveChapter(newChapter);
+        setChapters((prev) =>
+          prev.map((c) => (c.id === newChapter.id ? newChapter : c))
+        );
+
+        // Adjust positions for remaining suggestions (shift by length delta)
+        const delta =
+          suggestion.suggested.length -
+          (suggestion.position.end - suggestion.position.start ||
+            suggestion.original.length);
+        setSuggestions((prev) =>
+          prev.map((s) => {
+            if (s.id === suggestionId) return { ...s, accepted: true };
+            if (
+              s.accepted === null &&
+              s.position.start > suggestion.position.start &&
+              s.position.end > 0
+            ) {
+              return {
+                ...s,
+                position: {
+                  start: s.position.start + delta,
+                  end: s.position.end + delta,
+                },
+              };
+            }
+            return s;
+          })
+        );
+
+        // Save to backend
+        debouncedSave(activeChapter.id, updated);
+        announcePolite("수정이 적용되었습니다");
+      } else {
+        // Structure suggestions or no-match — mark as accepted without text change
+        setSuggestions((prev) =>
+          prev.map((s) =>
+            s.id === suggestionId ? { ...s, accepted: true } : s
+          )
+        );
+        if (suggestion.type === "structure") {
+          announcePolite("구조 제안을 확인했습니다");
+        }
+      }
+    },
+    [activeChapter, suggestions, debouncedSave, announcePolite]
+  );
 
   // Reject suggestion
   const handleRejectSuggestion = useCallback((suggestionId: string) => {
@@ -143,13 +252,63 @@ export default function EditingPage() {
     );
   }, []);
 
-  // Accept all
+  // Accept all — apply in reverse position order to avoid offset shifts
   const handleAcceptAll = useCallback(() => {
+    if (!activeChapter) return;
+
+    const pending = suggestions.filter(
+      (s) => s.accepted === null && s.type !== "structure"
+    );
+
+    if (pending.length === 0) {
+      // Only structure suggestions remain — mark all accepted
+      setSuggestions((prev) =>
+        prev.map((s) => (s.accepted === null ? { ...s, accepted: true } : s))
+      );
+      announcePolite("모든 구조 제안을 확인했습니다");
+      return;
+    }
+
+    // Sort by position descending (apply from end to start)
+    const sorted = [...pending].sort(
+      (a, b) => b.position.start - a.position.start
+    );
+
+    let content = activeChapter.content;
+    let appliedCount = 0;
+
+    for (const s of sorted) {
+      if (s.position.start > 0 || s.position.end > 0) {
+        const { start, end } = s.position;
+        if (start >= 0 && end > start && end <= content.length) {
+          content = content.slice(0, start) + s.suggested + content.slice(end);
+          appliedCount++;
+        }
+      } else if (s.original && content.includes(s.original)) {
+        content = content.replace(s.original, s.suggested);
+        appliedCount++;
+      }
+    }
+
+    // Update local state
+    const newChapter = { ...activeChapter, content };
+    setActiveChapter(newChapter);
+    setChapters((prev) =>
+      prev.map((c) => (c.id === newChapter.id ? newChapter : c))
+    );
+
+    // Mark all as accepted
     setSuggestions((prev) =>
       prev.map((s) => (s.accepted === null ? { ...s, accepted: true } : s))
     );
-    announcePolite("모든 수정 사항이 적용되었습니다");
-  }, [announcePolite]);
+
+    // Save to backend
+    if (appliedCount > 0) {
+      debouncedSave(activeChapter.id, content);
+    }
+
+    announcePolite(`${appliedCount}개 수정이 모두 적용되었습니다`);
+  }, [activeChapter, suggestions, debouncedSave, announcePolite]);
 
   // Load quality report
   const handleLoadReport = useCallback(async () => {
@@ -180,6 +339,11 @@ export default function EditingPage() {
           {book?.title} - 편집
         </h1>
         <div className="flex items-center gap-3">
+          {isSaving && (
+            <span className="text-sm text-gray-500 dark:text-gray-400" role="status">
+              저장 중...
+            </span>
+          )}
           <Link
             href={`/write/${bookId}`}
             className="

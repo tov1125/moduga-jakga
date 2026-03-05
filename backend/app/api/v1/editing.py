@@ -267,7 +267,7 @@ async def get_quality_report(
 
     # 편집 보고서 조회
     report_resp = (
-        supabase.table("editing_reports")
+        supabase.table(TABLE_EDITING_REPORTS)
         .select("*")
         .eq("book_id", book_id)
         .order("created_at", desc=True)
