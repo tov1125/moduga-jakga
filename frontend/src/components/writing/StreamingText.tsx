@@ -76,7 +76,7 @@ export function StreamingText({
               aria-hidden="true"
             />
           </span>
-          <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
+          <span className="text-sm text-primary-700 dark:text-primary-400 font-medium">
             AI가 글을 생성하고 있습니다...
           </span>
         </div>

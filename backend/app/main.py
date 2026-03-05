@@ -8,12 +8,12 @@ from typing import Any, AsyncGenerator
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from app.api.v1.router import api_v1_router
 from app.core.config import get_settings
+from app.core.rate_limit import rate_limit_middleware
 
 
 @asynccontextmanager
@@ -41,14 +41,40 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS 미들웨어 설정
+# 보안 헤더 + Rate Limiting 미들웨어
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next) -> Response:  # noqa: ARG001
+    """모든 응답에 보안 헤더를 추가합니다."""
+    response: Response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = (
+        "camera=(), microphone=(self), geolocation=()"
+    )
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; img-src 'self' data: https://*.supabase.co; "
+        "style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co"
+    )
+    return response
+
+
+# Rate Limiting 미들웨어
+@app.middleware("http")
+async def apply_rate_limit(request: Request, call_next):
+    """경로 패턴 기반 Rate Limiting"""
+    return await rate_limit_middleware(request, call_next)
+
+
+# CORS 미들웨어 설정 (강화: 와일드카드 → 명시적 목록)
 settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
 # 정적 파일 서빙 (AI 생성 표지 이미지 등)

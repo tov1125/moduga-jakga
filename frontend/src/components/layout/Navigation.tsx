@@ -88,7 +88,7 @@ export function Navigation() {
                     px-4 py-2.5 min-h-touch
                     rounded-lg text-base font-medium
                     transition-colors duration-150
-                    focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                    focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                     ${
                       isActive
                         ? "bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200"

@@ -17,7 +17,7 @@ export default function HomePage() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
           당신의 이야기를,
           <br />
-          <span className="text-primary-600 dark:text-primary-400">목소리</span>로
+          <span className="text-primary-700 dark:text-primary-400">목소리</span>로
           써보세요
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
@@ -29,11 +29,11 @@ export default function HomePage() {
           href="/signup"
           className="
             inline-flex items-center justify-center
-            bg-primary-600 text-white
+            bg-primary-400 text-gray-900
             px-8 py-4 rounded-xl
             text-xl font-bold
-            hover:bg-primary-700
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            hover:bg-primary-500
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             no-underline
             min-h-touch
             shadow-lg hover:shadow-xl
@@ -83,7 +83,7 @@ export default function HomePage() {
               <span
                 className="
                   w-12 h-12 rounded-full
-                  bg-primary-600 text-white
+                  bg-primary-400 text-gray-900
                   flex items-center justify-center
                   text-xl font-bold mb-4
                 "

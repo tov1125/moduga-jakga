@@ -173,7 +173,7 @@ export default function SettingsPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
               "
             />
           </div>
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                 bg-white dark:bg-gray-800
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
               "
             >
               {DISABILITY_OPTIONS.map((option) => (
@@ -240,7 +240,7 @@ export default function SettingsPage() {
                 bg-white dark:bg-gray-800
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 disabled:opacity-50
               "
             >

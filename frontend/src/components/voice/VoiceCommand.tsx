@@ -85,7 +85,7 @@ export function VoiceCommandIndicator({
         className="
           ml-1 p-1 rounded-full
           hover:bg-primary-200 dark:hover:bg-primary-800
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600
           min-h-touch min-w-touch flex items-center justify-center
         "
       >

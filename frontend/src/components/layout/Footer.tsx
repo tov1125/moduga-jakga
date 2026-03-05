@@ -17,10 +17,10 @@ export function Footer() {
         <p className="text-gray-600 dark:text-gray-400 text-base">
           모두가 작가 - 시각 장애인을 위한 AI 글쓰기 플랫폼
         </p>
-        <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
           이 서비스는 웹 접근성 지침(WCAG 2.1 AA)을 준수합니다.
         </p>
-        <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
           문의: support@modugajakga.kr | 접근성 관련 의견 환영합니다.
         </p>
       </div>

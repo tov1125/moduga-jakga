@@ -1,84 +1,150 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-05T07:30:00.000Z",
+  "lastUpdated": "2026-03-05T16:28:26.259Z",
   "activeFeatures": [
-    "sprint8-code-gaps",
-    "sprint9-p1-p3"
+    "sprint11-e2e-coverage",
+    "sprint10-deploy-coverage-e2e",
+    "docx",
+    "scripts",
+    "frontend",
+    "ui",
+    "layout",
+    "dashboard",
+    "[bookId]"
   ],
-  "primaryFeature": "sprint9-p1-p3",
+  "primaryFeature": "sprint11-e2e-coverage",
   "features": {
-    "sprint8-code-gaps": {
-      "phase": "completed",
-      "phaseNumber": 5,
-      "matchRate": 100,
+    "sprint11-e2e-coverage": {
+      "phase": "check",
+      "phaseNumber": 4,
+      "matchRate": 97,
       "iterationCount": 0,
       "requirements": [
-        "LayoutPreview /tmp 경로 수정",
-        "include_cover 로직 구현",
-        "ExportResponse 타입 수정",
-        "docstring DALL-E→Gemini",
-        "템플릿 preview_url 수정",
-        "Gemini 429 에러 핸들링"
+        "FE 커버리지 29.67% -> 50%+",
+        "BE 커버리지 41% -> 60%+",
+        "FE 테스트 276개 전체 통과",
+        "BE 테스트 268개 통과 (1 known failure)"
       ],
       "documents": {
-        "plan": "docs/01-plan/features/sprint8-code-gaps.plan.md",
-        "analysis": "docs/03-analysis/sprint8-code-gaps.analysis.md",
-        "report": "docs/04-report/features/sprint8-code-gaps.report.md"
+        "plan": "docs/01-plan/features/sprint11-e2e-coverage.plan.md",
+        "design": "docs/02-design/features/sprint11-e2e-coverage.design.md",
+        "analysis": "docs/03-analysis/sprint11-e2e-coverage.analysis.md"
       },
       "timestamps": {
-        "started": "2026-03-06T03:00:00.000Z",
-        "completedAt": "2026-03-06T06:30:00.000Z",
-        "lastUpdated": "2026-03-06T06:30:00.000Z"
+        "started": "2026-03-05T14:30:00.000Z",
+        "lastUpdated": "2026-03-05T15:00:00.000Z"
       }
     },
-    "sprint7-edit-apply": {
-      "phase": "archived",
-      "matchRate": 100,
-      "iterationCount": 0,
-      "startedAt": "2026-03-06T00:00:00.000Z",
-      "archivedAt": "2026-03-06T02:00:00.000Z",
-      "archivedTo": "docs/archive/2026-03/sprint7-edit-apply/"
-    },
-    "sprint5-shadcn-gemini": {
-      "phase": "archived",
-      "matchRate": 95.1,
-      "iterationCount": 0,
-      "startedAt": "2026-03-05T16:00:00.000Z",
-      "archivedAt": "2026-03-05T21:00:00.000Z",
-      "archivedTo": "docs/archive/2026-03/sprint5-shadcn-gemini/"
-    },
-    "sprint6-shadcn-complete": {
-      "phase": "archived",
-      "matchRate": 100,
-      "iterationCount": 0,
-      "startedAt": "2026-03-05T21:30:00.000Z",
-      "archivedAt": "2026-03-05T23:30:00.000Z",
-      "archivedTo": "docs/archive/2026-03/sprint6-shadcn-complete/"
-    },
-    "sprint9-p1-p3": {
-      "phase": "completed",
-      "phaseNumber": 5,
-      "matchRate": 100,
-      "iterationCount": 0,
+    "sprint10-deploy-coverage-e2e": {
+      "phase": "check",
+      "phaseNumber": 4,
+      "matchRate": 93,
+      "iterationCount": 1,
       "requirements": [
-        "다크모드 (next-themes + ThemeProvider + ThemeToggle)",
-        "이용약관/개인정보처리방침/AI 저작권 동의",
-        "STT WebSocket 프로토콜 보완 (인증/설정 메시지)",
-        "편집 Undo 기능 (useEditHistory + 키보드 단축키)",
-        "Vercel 배포 설정 (Dockerfile + vercel.json + standalone)",
-        "코드 커버리지 측정 (FE 12.5% / BE 41%)",
-        "VoiceOver 접근성 수동 테스트 체크리스트"
+        "Vercel 실제 배포 (vercel.json URL 교체 + deploy)",
+        "FE 커버리지 향상 (12.5% → 50%+)",
+        "BE 커버리지 향상 (41% → 60%+)",
+        "Playwright E2E 사용자 흐름 3건 추가",
+        "GitHub Actions CI 워크플로우"
       ],
       "documents": {
-        "plan": "docs/01-plan/features/sprint9-p1-p3.plan.md",
-        "analysis": "docs/03-analysis/sprint9-p1-p3.analysis.md",
-        "report": "docs/04-report/features/sprint9-p1-p3.report.md"
+        "plan": "docs/01-plan/features/sprint10-deploy-coverage-e2e.plan.md"
       },
       "timestamps": {
-        "started": "2026-03-05T07:15:00.000Z",
-        "completedAt": "2026-03-05T07:35:00.000Z",
-        "lastUpdated": "2026-03-05T07:35:00.000Z"
+        "started": "2026-03-06T08:25:00.000Z",
+        "lastUpdated": "2026-03-05T09:00:00.000Z"
       }
+    },
+    "docx": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T15:21:29.260Z",
+        "lastUpdated": "2026-03-05T15:21:29.260Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/docx/generate_a0_report.py"
+    },
+    "scripts": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:08:30.913Z",
+        "lastUpdated": "2026-03-05T16:13:48.382Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/scripts/redesign_consultation.py"
+    },
+    "frontend": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:12:20.738Z",
+        "lastUpdated": "2026-03-05T16:15:59.105Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/tailwind.config.ts"
+    },
+    "ui": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:13:31.898Z",
+        "lastUpdated": "2026-03-05T16:28:26.259Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/ui/radio-group.tsx"
+    },
+    "layout": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:16:30.401Z",
+        "lastUpdated": "2026-03-05T16:27:52.768Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/layout/Footer.tsx"
+    },
+    "dashboard": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:27:54.304Z",
+        "lastUpdated": "2026-03-05T16:27:54.304Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/dashboard/page.tsx"
+    },
+    "[bookId]": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:27:55.484Z",
+        "lastUpdated": "2026-03-05T16:27:55.484Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/write/[bookId]/page.tsx"
     }
   },
   "pipeline": {
@@ -89,9 +155,33 @@
   "session": {
     "startedAt": "2026-03-03T03:00:00.000Z",
     "onboardingCompleted": true,
-    "lastActivity": "2026-03-05T07:30:00.000Z"
+    "lastActivity": "2026-03-05T16:28:26.259Z"
   },
   "history": [
+    {
+      "timestamp": "2026-03-06T15:15:00.000Z",
+      "feature": "cleanup",
+      "phase": "maintenance",
+      "action": "Cleaned up 14 features (6 archived summaries + 8 ghost features)"
+    },
+    {
+      "timestamp": "2026-03-06T15:09:00.000Z",
+      "feature": "sprint13-ux-legal",
+      "phase": "archived",
+      "action": "아카이브 완료 (95.8%) — summary 보존"
+    },
+    {
+      "timestamp": "2026-03-06T10:30:00.000Z",
+      "feature": "sprint13-ux-legal",
+      "phase": "completed",
+      "action": "Sprint 13 완료 (95.8% match, 0 iterations, 보고서 생성)"
+    },
+    {
+      "timestamp": "2026-03-06T08:25:00.000Z",
+      "feature": "sprint10-deploy-coverage-e2e",
+      "phase": "plan",
+      "action": "Sprint 10 Plan — 배포 + 커버리지 + E2E (5 Phase, 10 FR)"
+    },
     {
       "timestamp": "2026-03-05T19:15:00.000Z",
       "feature": "cleanup",
@@ -99,76 +189,130 @@
       "action": "Cleaned up 8 features"
     },
     {
-      "timestamp": "2026-03-05T21:00:00.000Z",
-      "feature": "sprint5-shadcn-gemini",
-      "phase": "archived",
-      "action": "아카이브 완료 (95.1%)"
-    },
-    {
-      "timestamp": "2026-03-05T23:30:00.000Z",
-      "feature": "sprint6-shadcn-complete",
-      "phase": "archived",
-      "action": "아카이브 완료 (100%) — summary 보존"
-    },
-    {
-      "timestamp": "2026-03-06T02:00:00.000Z",
-      "feature": "sprint7-edit-apply",
-      "phase": "archived",
-      "action": "아카이브 완료 (100%) — summary 보존"
-    },
-    {
-      "timestamp": "2026-03-06T03:00:00.000Z",
-      "feature": "sprint8-code-gaps",
-      "phase": "plan",
-      "action": "Sprint 8 Plan — E2E 검증 발견 코드 Gap 6건 수정"
-    },
-    {
-      "timestamp": "2026-03-06T05:35:00.000Z",
-      "feature": "sprint8-code-gaps",
+      "timestamp": "2026-03-05T09:00:00.000Z",
+      "feature": "sprint10-deploy-coverage-e2e",
       "phase": "do",
-      "action": "Do 완료 — 6/6 Gap 수정"
+      "action": "Do 완료 — 5/5 Phase (Vercel URL환경변수, FE 커버리지 20%, BE 커버리지 41%, E2E 3건, CI 워크플로우)"
     },
     {
-      "timestamp": "2026-03-06T06:00:00.000Z",
-      "feature": "sprint8-code-gaps",
-      "phase": "check",
-      "action": "Check 완료 — 100% (23/23 items)"
-    },
-    {
-      "timestamp": "2026-03-06T06:30:00.000Z",
-      "feature": "sprint8-code-gaps",
-      "phase": "completed",
-      "action": "Report 완료 — PDCA #10"
-    },
-    {
-      "timestamp": "2026-03-05T07:15:00.000Z",
-      "feature": "sprint9-p1-p3",
-      "phase": "plan",
-      "action": "Sprint 9 Plan — A0 보고서 P1~P3 긴급조치 7 Phase"
-    },
-    {
-      "timestamp": "2026-03-05T07:20:00.000Z",
-      "feature": "sprint9-p1-p3",
+      "timestamp": "2026-03-05T15:21:29.260Z",
+      "feature": "docx",
       "phase": "do",
-      "action": "Do 완료 — 7/7 Phase (다크모드, 법률동의, STT프로토콜, Undo, Vercel배포, 커버리지, VoiceOver체크리스트). tsc 0err, vitest 96/96, pytest 169/170"
+      "action": "updated"
     },
     {
-      "timestamp": "2026-03-05T07:30:00.000Z",
-      "feature": "sprint9-p1-p3",
-      "phase": "check",
-      "action": "Check 완료 — 100% (38/38 items). 7 Phase 모두 Plan 일치."
+      "timestamp": "2026-03-05T16:08:30.913Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
     },
     {
-      "timestamp": "2026-03-05T07:30:00.000Z",
-      "feature": "cleanup",
-      "phase": "maintenance",
-      "action": "유령 피처 8건 정리 (docx, frontend, providers, ui, layout, terms, privacy, signup, edit)"
+      "timestamp": "2026-03-05T16:09:04.985Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
     },
     {
-      "timestamp": "2026-03-05T07:35:00.000Z",
-      "feature": "sprint9-p1-p3",
-      "phase": "completed",
-      "action": "Report 완료 — PDCA #11 완료보고서 작성. 0 iterations. Sprint 9 P1~P3 긴급조치 7 Phase 100% 완료"
+      "timestamp": "2026-03-05T16:12:20.738Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:12:42.949Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:13:31.898Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:13:48.382Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:15:59.105Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:16:30.401Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:16:40.129Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:16:50.326Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:18:06.851Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:18:15.516Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:19:06.048Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:19:40.509Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:27:52.768Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:27:54.304Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:27:55.484Z",
+      "feature": "[bookId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:28:23.802Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:28:26.259Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
     }
   ]
 }

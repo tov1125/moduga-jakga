@@ -13,8 +13,11 @@
 | sprint5-shadcn-gemini | 95.1% | 0 | 2026-03-05 | [analysis](sprint5-shadcn-gemini/sprint5-shadcn-gemini.analysis.md), [report](sprint5-shadcn-gemini/sprint5-shadcn-gemini.report.md) |
 | sprint6-shadcn-complete | 100% | 0 | 2026-03-05 | [plan](sprint6-shadcn-complete/sprint6-shadcn-complete.plan.md), [analysis](sprint6-shadcn-complete/sprint6-shadcn-complete.analysis.md), [report](sprint6-shadcn-complete/sprint6-shadcn-complete.report.md) |
 | sprint7-edit-apply | 100% | 0 | 2026-03-06 | [plan](sprint7-edit-apply/sprint7-edit-apply.plan.md), [analysis](sprint7-edit-apply/sprint7-edit-apply.analysis.md), [report](sprint7-edit-apply/sprint7-edit-apply.report.md) |
+| sprint8-code-gaps | 100% | 0 | 2026-03-06 | [plan](sprint8-code-gaps/sprint8-code-gaps.plan.md), [analysis](sprint8-code-gaps/sprint8-code-gaps.analysis.md), [report](sprint8-code-gaps/sprint8-code-gaps.report.md) |
+| sprint9-p1-p3 | 100% | 0 | 2026-03-06 | [plan](sprint9-p1-p3/sprint9-p1-p3.plan.md), [analysis](sprint9-p1-p3/sprint9-p1-p3.analysis.md), [report](sprint9-p1-p3/sprint9-p1-p3.report.md) |
+| sprint13-ux-legal | 95.8% | 0 | 2026-03-06 | [plan](sprint13-ux-legal/sprint13-ux-legal.plan.md), [design](sprint13-ux-legal/sprint13-ux-legal.design.md), [analysis](sprint13-ux-legal/sprint13-ux-legal.analysis.md), [report](sprint13-ux-legal/sprint13-ux-legal.report.md) |
 
 ## Summary
 
-- **Total archived**: 9 features
-- **Average match rate**: 96.98%
+- **Total archived**: 12 features
+- **Average match rate**: 97.39%

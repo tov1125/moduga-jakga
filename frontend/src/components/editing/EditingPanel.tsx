@@ -159,7 +159,7 @@ export function EditingPanel({
                       aria-label={`제안 ${index + 1}: ${suggestion.explanation}. 자세히 보기`}
                       className="
                         flex-1 text-left
-                        focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                        focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                         rounded-lg p-1
                       "
                     >

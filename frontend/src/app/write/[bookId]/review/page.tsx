@@ -104,9 +104,9 @@ export default function ReviewPage() {
           href={`/write/${bookId}/edit`}
           className="
             inline-flex items-center
-            text-primary-600 dark:text-primary-400
+            text-primary-700 dark:text-primary-400
             font-medium no-underline hover:underline
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             rounded-lg px-3 py-2 min-h-touch
           "
           aria-label="편집으로 돌아가기"
@@ -150,7 +150,7 @@ export default function ReviewPage() {
           </div>
           <div>
             <dt className="text-sm text-gray-500 dark:text-gray-400">상태</dt>
-            <dd className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+            <dd className="text-2xl font-bold text-primary-700 dark:text-primary-400">
               검토 중
             </dd>
           </div>
@@ -205,7 +205,7 @@ export default function ReviewPage() {
             text-base font-semibold
             no-underline
             hover:bg-gray-300 dark:hover:bg-gray-600
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             min-h-touch
           "
           aria-label="수정 사항 요청 - 편집으로 돌아가기"

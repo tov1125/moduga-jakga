@@ -237,3 +237,68 @@ class TestPreviewLayout:
             json={"book_id": "test", "page_size": "A5"},
         )
         assert response.status_code == 401
+
+
+class TestDesignServiceUnit:
+    """DesignService 유닛 테스트 (Gemini API 연동)."""
+
+    @patch("app.services.design_service.DesignService")
+    def test_표지_생성_gemini_429_시_500(
+        self,
+        mock_design_cls: MagicMock,
+        client: TestClient,
+        auth_headers: dict[str, str],
+    ) -> None:
+        """Gemini API 429 Rate Limit 시 500을 반환한다."""
+        mock_service = MagicMock()
+        mock_service.generate_cover = AsyncMock(
+            side_effect=Exception("429 Resource has been exhausted")
+        )
+        mock_design_cls.return_value = mock_service
+
+        response = client.post(
+            "/api/v1/design/cover/generate",
+            headers=auth_headers,
+            json={
+                "book_title": "테스트",
+                "author_name": "작가",
+                "genre": "essay",
+                "style": "minimalist",
+            },
+        )
+
+        assert response.status_code == 500
+
+    @patch("app.api.v1.design.DesignService")
+    def test_모든_장르_표지_생성_요청_가능(
+        self,
+        mock_design_cls: MagicMock,
+        client: TestClient,
+        auth_headers: dict[str, str],
+    ) -> None:
+        """7가지 장르 모두 표지 생성 API를 호출할 수 있다."""
+        genres = ["essay", "novel", "poem", "autobiography", "children", "non_fiction", "other"]
+
+        for genre in genres:
+            mock_service = MagicMock()
+            mock_service.generate_cover = AsyncMock(
+                return_value={
+                    "image_url": f"https://example.com/{genre}.png",
+                    "prompt_used": f"{genre} cover",
+                    "style": "minimalist",
+                }
+            )
+            mock_design_cls.return_value = mock_service
+
+            response = client.post(
+                "/api/v1/design/cover/generate",
+                headers=auth_headers,
+                json={
+                    "book_title": "테스트",
+                    "author_name": "작가",
+                    "genre": genre,
+                    "style": "minimalist",
+                },
+            )
+
+            assert response.status_code == 200, f"{genre} failed"

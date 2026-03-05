@@ -76,7 +76,7 @@ describe("WCAG Operable (운용 가능)", () => {
     render(<Button>테스트</Button>);
     const button = screen.getByRole("button");
     expect(button.className).toContain("focus-visible:ring-4");
-    expect(button.className).toContain("focus-visible:ring-yellow-400");
+    expect(button.className).toContain("focus-visible:ring-primary-600");
   });
 
   it("비활성 버튼은 클릭 불가", async () => {

@@ -128,7 +128,7 @@ export function ChapterList({
                     flex items-center justify-between
                     min-h-touch
                     transition-colors duration-150
-                    focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                    focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                     ${
                       isActive
                         ? "bg-primary-100 dark:bg-primary-900 text-primary-900 dark:text-primary-100 font-semibold"
@@ -157,7 +157,7 @@ export function ChapterList({
                           p-1 rounded
                           text-gray-400 hover:text-red-600
                           dark:text-gray-500 dark:hover:text-red-400
-                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
+                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600
                           min-h-touch min-w-touch flex items-center justify-center
                         "
                       >

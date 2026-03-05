@@ -120,7 +120,7 @@ export default function NewWritePage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="작품 제목을 입력하세요"
@@ -144,7 +144,7 @@ export default function NewWritePage() {
                     flex flex-col p-4 rounded-xl cursor-pointer
                     min-h-touch
                     transition-colors duration-150
-                    focus-within:ring-4 focus-within:ring-yellow-400
+                    focus-within:ring-4 focus-within:ring-primary-600
                     ${
                       genre === option.value
                         ? "border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20"
@@ -159,7 +159,7 @@ export default function NewWritePage() {
                       value={option.value}
                       checked={genre === option.value}
                       onChange={() => setGenre(option.value)}
-                      className="w-5 h-5 text-primary-600"
+                      className="w-5 h-5 text-primary-700"
                     />
                     <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       {option.label}
@@ -194,7 +194,7 @@ export default function NewWritePage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl resize-y
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="작품에 대해 간단히 설명해 주세요"

@@ -77,9 +77,9 @@ export default function DesignPage() {
           href={`/write/${bookId}/review`}
           className="
             inline-flex items-center
-            text-primary-600 dark:text-primary-400
+            text-primary-700 dark:text-primary-400
             font-medium no-underline hover:underline
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             rounded-lg px-3 py-2 min-h-touch
           "
           aria-label="검토로 돌아가기"
@@ -126,7 +126,7 @@ export default function DesignPage() {
                 bg-white dark:bg-gray-800
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
               "
             >
               <option value="A5">A5 (148×210mm)</option>
@@ -154,7 +154,7 @@ export default function DesignPage() {
                 bg-white dark:bg-gray-800
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
               "
             >
               <option value="default">기본 글꼴</option>
@@ -251,12 +251,12 @@ export default function DesignPage() {
           href={`/publish/${bookId}`}
           className="
             inline-flex items-center justify-center
-            bg-primary-600 text-white
+            bg-primary-400 text-gray-900
             px-6 py-3 rounded-xl
             text-base font-semibold
             no-underline
-            hover:bg-primary-700
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            hover:bg-primary-500
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             min-h-touch
           "
           aria-label="출판 단계로 이동"

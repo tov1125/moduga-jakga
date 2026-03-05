@@ -160,7 +160,7 @@ export default function SignupPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="example@email.com"
@@ -209,7 +209,7 @@ export default function SignupPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="작가 이름을 입력하세요"
@@ -250,7 +250,7 @@ export default function SignupPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="비밀번호를 입력하세요"
@@ -300,7 +300,7 @@ export default function SignupPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="비밀번호를 다시 입력하세요"
@@ -338,7 +338,7 @@ export default function SignupPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
               "
             >
               {DISABILITY_OPTIONS.map((option) => (
@@ -376,7 +376,7 @@ export default function SignupPage() {
                 <Link
                   href="/terms"
                   target="_blank"
-                  className="text-primary-600 dark:text-primary-400 underline"
+                  className="text-primary-700 dark:text-primary-400 underline"
                 >
                   이용약관
                 </Link>
@@ -398,7 +398,7 @@ export default function SignupPage() {
                 <Link
                   href="/privacy"
                   target="_blank"
-                  className="text-primary-600 dark:text-primary-400 underline"
+                  className="text-primary-700 dark:text-primary-400 underline"
                 >
                   개인정보처리방침
                 </Link>
@@ -443,7 +443,7 @@ export default function SignupPage() {
             이미 계정이 있으신가요?{" "}
             <Link
               href="/login"
-              className="text-primary-600 dark:text-primary-400 font-medium"
+              className="text-primary-700 dark:text-primary-400 font-medium"
             >
               로그인
             </Link>

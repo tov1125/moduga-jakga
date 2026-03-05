@@ -133,7 +133,7 @@ export function WritingEditor({
             rounded-xl
             resize-y
             focus:border-primary-500 dark:focus:border-primary-400
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             placeholder:text-gray-400 dark:placeholder:text-gray-500
           "
         />

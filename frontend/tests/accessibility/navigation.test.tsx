@@ -84,7 +84,7 @@ describe("Navigation 접근성", () => {
     const menuItems = screen.getAllByRole("menuitem");
     menuItems.forEach((item) => {
       expect(item.className).toContain("focus-visible:ring-4");
-      expect(item.className).toContain("focus-visible:ring-yellow-400");
+      expect(item.className).toContain("focus-visible:ring-primary-600");
     });
   });
 

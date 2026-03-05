@@ -217,7 +217,7 @@ export function CoverDesigner({
                   flex flex-col items-center gap-2 p-3 rounded-xl
                   min-h-touch
                   transition-colors duration-150
-                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                   ${
                     selectedTemplate === template.id
                       ? "border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20"

@@ -1,0 +1,149 @@
+{
+  "css_variables": {
+    "light": {
+      "--background": "0 0% 100%",
+      "--foreground": "200 9% 19%",
+      "--card": "0 0% 100%",
+      "--card-foreground": "200 9% 19%",
+      "--popover": "0 0% 100%",
+      "--popover-foreground": "200 9% 19%",
+      "--primary": "42 62.4% 55.5%",
+      "--primary-foreground": "200 9% 19%",
+      "--secondary": "200 15.4% 89.8%",
+      "--secondary-foreground": "200 9% 19%",
+      "--muted": "200 15.4% 89.8%",
+      "--muted-foreground": "200 9% 45%",
+      "--accent": "42 62.4% 55.5%",
+      "--accent-foreground": "200 9% 19%",
+      "--destructive": "0 72% 51%",
+      "--destructive-foreground": "0 0% 100%",
+      "--border": "200 15.4% 89.8%",
+      "--input": "200 15.4% 89.8%",
+      "--ring": "40 69.3% 39%"
+    },
+    "dark": {
+      "--background": "200 9% 19%",
+      "--foreground": "200 15.4% 89.8%",
+      "--card": "200 9% 23%",
+      "--card-foreground": "0 0% 100%",
+      "--popover": "200 9% 23%",
+      "--popover-foreground": "0 0% 100%",
+      "--primary": "42 62.4% 55.5%",
+      "--primary-foreground": "200 9% 19%",
+      "--secondary": "200 9% 28%",
+      "--secondary-foreground": "0 0% 100%",
+      "--muted": "200 9% 28%",
+      "--muted-foreground": "200 9% 65%",
+      "--accent": "42 62.4% 55.5%",
+      "--accent-foreground": "200 9% 19%",
+      "--destructive": "0 72% 51%",
+      "--destructive-foreground": "0 0% 100%",
+      "--border": "200 9% 28%",
+      "--input": "200 9% 28%",
+      "--ring": "40 69.3% 39%"
+    }
+  },
+  "tailwind_scales": {
+    "primary": {
+      "50": "#FAF6ED",
+      "100": "#F4ECDA",
+      "200": "#E8D7B0",
+      "300": "#DDC286",
+      "400": "#D4A843",
+      "500": "#C39632",
+      "600": "#A87B1E",
+      "700": "#876319",
+      "800": "#6B4E15",
+      "900": "#523C13",
+      "950": "#33240A"
+    },
+    "accent": {
+      "50": "#FAF6ED",
+      "100": "#F4ECDA",
+      "200": "#E8D7B0",
+      "300": "#DDC286",
+      "400": "#D4A843",
+      "500": "#C39632",
+      "600": "#A87B1E",
+      "700": "#876319",
+      "800": "#6B4E15",
+      "900": "#523C13",
+      "950": "#33240A"
+    },
+    "gray": {
+      "50": "#F4F6F7",
+      "100": "#EAEFF1",
+      "200": "#DFE6E9",
+      "300": "#C8D3D8",
+      "400": "#A1B3B9",
+      "500": "#7A8F97",
+      "600": "#5C7078",
+      "700": "#46555B",
+      "800": "#354045",
+      "900": "#2D3436",
+      "950": "#1E2324"
+    }
+  },
+  "focus_ring": {
+    "light": "#A87B1E",
+    "dark": "#A87B1E",
+    "rationale": "The core Accent Gold (#D4A843) fails the 3:1 non-text contrast ratio against Pure White (2.2:1). Using this darker gold variant (#A87B1E) guarantees a compliant contrast ratio of 3.7:1 on White and 3.4:1 on Deep Charcoal, allowing a single consistent, highly visible focus indicator for visually impaired users across both themes."
+  },
+  "contrast_ratios": {
+    "charcoal_on_white": {
+      "ratio": "12.9:1",
+      "wcag_aa": true,
+      "wcag_aaa": true
+    },
+    "gold_on_white": {
+      "ratio": "2.2:1",
+      "wcag_aa": false,
+      "wcag_aaa": false
+    },
+    "gold_on_charcoal": {
+      "ratio": "5.7:1",
+      "wcag_aa": true,
+      "wcag_aaa": false
+    },
+    "white_on_gold": {
+      "ratio": "2.2:1",
+      "wcag_aa": false,
+      "wcag_aaa": false
+    },
+    "charcoal_on_grey": {
+      "ratio": "10.2:1",
+      "wcag_aa": true,
+      "wcag_aaa": true
+    },
+    "gold_on_grey": {
+      "ratio": "1.7:1",
+      "wcag_aa": false,
+      "wcag_aaa": false
+    }
+  },
+  "component_mapping": {
+    "header_bg_light": "Pure White (#FFFFFF) background with a 2px Soft Grey (#DFE6E9) bottom border to establish clear layout structure without relying solely on shadows.",
+    "header_bg_dark": "Deep Charcoal (#2D3436) background with a lighter gray-700 (#46555B) bottom border.",
+    "cta_button": "Accent Gold (#D4A843) background with Deep Charcoal (#2D3436) text. NEVER use white text on gold buttons as it fails WCAG AA (2.2:1).",
+    "secondary_button": "Soft Grey (#DFE6E9) background with Deep Charcoal (#2D3436) text for light mode, ensuring high readability (10.2:1).",
+    "card_bg_light": "Pure White (#FFFFFF) with a 2px solid Soft Grey (#DFE6E9) border to provide stark, visible boundaries for visually impaired users.",
+    "card_bg_dark": "Lighter Charcoal (#354045) background to pop against the Deep Charcoal (#2D3436) app background, keeping structural contrast high.",
+    "link_text_light": "Dark Gold variant (#876319, primary-700) to ensure a safe 5.4:1 contrast ratio against Pure White backgrounds while retaining the brand accent.",
+    "link_text_dark": "Base Accent Gold (#D4A843) provides a 5.7:1 contrast ratio against the Deep Charcoal background, making it perfectly legible and prominent.",
+    "selection_bg": "Primary-200 (#E8D7B0) for light mode and Gray-700 (#46555B) for dark mode to highlight selected text clearly without diminishing text contrast below 4.5:1."
+  },
+  "accessibility_notes": [
+    "White text on the Accent Gold (#D4A843) background yields a 2.2:1 contrast ratio, failing WCAG AA requirements. Always use Deep Charcoal (#2D3436) text on Gold elements (5.7:1 ratio).",
+    "Accent Gold (#D4A843) text on Pure White (#FFFFFF) fails contrast requirements. For inline links and colored typography in Light Mode, map text components to the darker gold variant (#876319) which provides a compliant 5.4:1 ratio.",
+    "The focus ring color was adjusted to a darker gold (#A87B1E) to ensure it acts as a universal, WCAG-compliant (3:1+) non-text UI indicator across both extremely light and extremely dark backgrounds, reducing cognitive load for visually impaired users."
+  ],
+  "_metadata": {
+    "model_used": "gemini-3.1-pro-preview",
+    "palette": {
+      "white": "#FFFFFF",
+      "soft_grey": "#DFE6E9",
+      "deep_charcoal": "#2D3436",
+      "accent_gold": "#D4A843"
+    }
+  }
+}

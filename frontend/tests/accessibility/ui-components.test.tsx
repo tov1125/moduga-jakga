@@ -64,7 +64,7 @@ describe("Button 접근성", () => {
     render(<Button>포커스 테스트</Button>);
     const button = screen.getByRole("button", { name: "포커스 테스트" });
     expect(button.className).toContain("focus-visible:ring-4");
-    expect(button.className).toContain("focus-visible:ring-yellow-400");
+    expect(button.className).toContain("focus-visible:ring-primary-600");
   });
 
   it("Enter 키로 버튼 활성화 가능", async () => {

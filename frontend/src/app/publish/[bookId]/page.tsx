@@ -52,9 +52,9 @@ export default function PublishPage() {
           href={`/design/${bookId}`}
           className="
             inline-flex items-center
-            text-primary-600 dark:text-primary-400
+            text-primary-700 dark:text-primary-400
             font-medium no-underline hover:underline
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             rounded-lg px-3 py-2 min-h-touch
           "
           aria-label="디자인으로 돌아가기"
@@ -87,9 +87,9 @@ export default function PublishPage() {
           href="/dashboard"
           className="
             inline-flex items-center justify-center
-            text-primary-600 dark:text-primary-400
+            text-primary-700 dark:text-primary-400
             font-medium no-underline hover:underline
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             rounded-lg px-3 py-2 min-h-touch
           "
           aria-label="대시보드로 돌아가기"

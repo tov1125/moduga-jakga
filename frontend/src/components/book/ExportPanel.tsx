@@ -140,7 +140,7 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
                 flex items-start gap-4 p-4 rounded-xl cursor-pointer
                 min-h-touch
                 transition-colors duration-150
-                focus-within:ring-4 focus-within:ring-yellow-400
+                focus-within:ring-4 focus-within:ring-primary-600
                 ${
                   selectedFormat === format
                     ? "border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20"

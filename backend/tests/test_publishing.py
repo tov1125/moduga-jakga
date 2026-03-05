@@ -279,3 +279,138 @@ class TestPublishingService:
 
         # 정리
         os.remove(file_path)
+
+    @pytest.mark.asyncio
+    async def test_export_docx_without_toc(self, mock_settings: MagicMock) -> None:
+        """목차 없는 DOCX 내보내기"""
+        import os
+
+        from app.services.publishing_service import PublishingService
+
+        service = PublishingService(settings=mock_settings)
+
+        book_data = {"id": "test-book-id", "title": "테스트", "description": "설명"}
+        chapters = [{"title": "제1장", "content": "내용입니다.", "order": 1}]
+
+        file_path = await service._export_docx(
+            export_id="test-no-toc",
+            book_data=book_data,
+            chapters=chapters,
+            include_toc=False,
+        )
+
+        assert file_path.endswith(".docx")
+        assert os.path.exists(file_path)
+        os.remove(file_path)
+
+    def test_export_all_three_formats_via_api(
+        self,
+        client: TestClient,
+        auth_headers: dict[str, str],
+        mock_supabase: MagicMock,
+        sample_book: dict[str, Any],
+    ) -> None:
+        """DOCX, PDF, EPUB 3가지 형식 모두 API 호출 가능"""
+        books_mock = MagicMock()
+        books_mock.select.return_value = books_mock
+        books_mock.eq.return_value = books_mock
+        books_mock.execute.return_value = MagicMock(data=[sample_book])
+
+        exports_mock = MagicMock()
+        exports_mock.insert.return_value = exports_mock
+        exports_mock.update.return_value = exports_mock
+        exports_mock.eq.return_value = exports_mock
+
+        original_side_effect = mock_supabase.table.side_effect
+
+        for fmt in ["docx", "pdf", "epub"]:
+            export_data = {
+                "id": f"export-{fmt}",
+                "book_id": sample_book["id"],
+                "user_id": "test-user-id-12345",
+                "format": fmt,
+                "status": "pending",
+                "progress": 0.0,
+                "created_at": "2025-01-01T00:00:00+00:00",
+            }
+            exports_mock.execute.return_value = MagicMock(data=[export_data])
+
+            def table_mock(name: str, _books=books_mock, _exports=exports_mock) -> MagicMock:
+                if name == "books":
+                    return _books
+                if name == "exports":
+                    return _exports
+                return original_side_effect(name) if original_side_effect else MagicMock()
+
+            mock_supabase.table.side_effect = table_mock
+
+            with patch("app.api.v1.publishing.PublishingService") as mock_svc_cls:
+                mock_svc = MagicMock()
+                mock_svc.start_export = AsyncMock(return_value=f"/tmp/test.{fmt}")
+                mock_svc_cls.return_value = mock_svc
+
+                response = client.post(
+                    "/api/v1/publishing/export",
+                    headers=auth_headers,
+                    json={"book_id": sample_book["id"], "format": fmt},
+                )
+
+                assert response.status_code == 202, f"{fmt} export failed"
+                assert response.json()["format"] == fmt
+
+    def test_export_with_include_cover_option(
+        self,
+        client: TestClient,
+        auth_headers: dict[str, str],
+        mock_supabase: MagicMock,
+        sample_book: dict[str, Any],
+    ) -> None:
+        """include_cover 옵션이 API 요청에 포함된다"""
+        books_mock = MagicMock()
+        books_mock.select.return_value = books_mock
+        books_mock.eq.return_value = books_mock
+        books_mock.execute.return_value = MagicMock(data=[sample_book])
+
+        export_data = {
+            "id": "export-cover",
+            "book_id": sample_book["id"],
+            "user_id": "test-user-id-12345",
+            "format": "pdf",
+            "status": "pending",
+            "progress": 0.0,
+            "created_at": "2025-01-01T00:00:00+00:00",
+        }
+        exports_mock = MagicMock()
+        exports_mock.insert.return_value = exports_mock
+        exports_mock.update.return_value = exports_mock
+        exports_mock.eq.return_value = exports_mock
+        exports_mock.execute.return_value = MagicMock(data=[export_data])
+
+        original_side_effect = mock_supabase.table.side_effect
+
+        def table_mock(name: str) -> MagicMock:
+            if name == "books":
+                return books_mock
+            if name == "exports":
+                return exports_mock
+            return original_side_effect(name) if original_side_effect else MagicMock()
+
+        mock_supabase.table.side_effect = table_mock
+
+        with patch("app.api.v1.publishing.PublishingService") as mock_svc_cls:
+            mock_svc = MagicMock()
+            mock_svc.start_export = AsyncMock(return_value="/tmp/test.pdf")
+            mock_svc_cls.return_value = mock_svc
+
+            response = client.post(
+                "/api/v1/publishing/export",
+                headers=auth_headers,
+                json={
+                    "book_id": sample_book["id"],
+                    "format": "pdf",
+                    "include_cover": True,
+                    "include_toc": False,
+                },
+            )
+
+            assert response.status_code == 202

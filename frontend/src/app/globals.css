@@ -3,50 +3,51 @@
 @tailwind utilities;
 
 @layer base {
-  /* === shadcn/ui CSS Variables === */
+  /* === shadcn/ui CSS Variables — Gemini 3.1 Pro 리디자인 (4색 팔레트) === */
+  /* White #FFFFFF(60%) / Soft Grey #DFE6E9(30%) / Charcoal #2D3436 / Gold #D4A843(10%) */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 200 9% 19%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 200 9% 19%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 289.1 71.3% 48.4%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 200 9% 19%;
+    --primary: 42 62.4% 55.5%;
+    --primary-foreground: 200 9% 19%;
+    --secondary: 200 15.4% 89.8%;
+    --secondary-foreground: 200 9% 19%;
+    --muted: 200 15.4% 89.8%;
+    --muted-foreground: 200 9% 45%;
+    --accent: 42 62.4% 55.5%;
+    --accent-foreground: 200 9% 19%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 50.5 100% 50%;
+    --border: 200 15.4% 89.8%;
+    --input: 200 15.4% 89.8%;
+    --ring: 40 69.3% 39%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 289.1 71.3% 48.4%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 200 9% 19%;
+    --foreground: 200 15.4% 89.8%;
+    --card: 200 9% 23%;
+    --card-foreground: 0 0% 100%;
+    --popover: 200 9% 23%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 42 62.4% 55.5%;
+    --primary-foreground: 200 9% 19%;
+    --secondary: 200 9% 28%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 200 9% 28%;
+    --muted-foreground: 200 9% 65%;
+    --accent: 42 62.4% 55.5%;
+    --accent-foreground: 200 9% 19%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 50.5 100% 45%;
+    --border: 200 9% 28%;
+    --input: 200 9% 28%;
+    --ring: 40 69.3% 39%;
     --radius: 0.75rem;
   }
 
@@ -63,10 +64,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Strong focus visible indicator */
+  /* Strong focus visible indicator — #A87B1E (primary-600) for 3.7:1 on white, 3.4:1 on charcoal */
   *:focus-visible {
-    @apply outline-none ring-4 ring-yellow-400 ring-offset-2;
-    @apply dark:ring-yellow-300 dark:ring-offset-gray-950;
+    @apply outline-none ring-4 ring-primary-600 ring-offset-2;
+    @apply dark:ring-primary-600 dark:ring-offset-gray-950;
   }
 
   /* Remove default focus for mouse users */
@@ -87,9 +88,9 @@
     @apply text-xl font-semibold leading-snug;
   }
 
-  /* Link styling */
+  /* Link styling — primary-700 #876319 (5.4:1 on white) / primary-400 #D4A843 (5.7:1 on charcoal) */
   a {
-    @apply text-primary-600 dark:text-primary-400;
+    @apply text-primary-700 dark:text-primary-400;
     @apply underline decoration-1 underline-offset-2;
     @apply hover:decoration-2;
   }
@@ -109,7 +110,7 @@
 
   .skip-link:focus {
     @apply not-sr-only fixed top-4 left-4 z-[9999];
-    @apply bg-primary-700 text-white;
+    @apply bg-primary-400 text-gray-900;
     @apply px-6 py-3 rounded-lg;
     @apply text-lg font-bold;
     @apply shadow-lg;

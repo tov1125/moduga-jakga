@@ -8,6 +8,8 @@ import { render } from "@testing-library/react";
 import { axe } from "vitest-axe";
 import { Button } from "@/components/ui/Button";
 import { StreamingText } from "@/components/writing/StreamingText";
+import { Input } from "@/components/ui/Input";
+import { Footer } from "@/components/layout/Footer";
 
 // Mock useAnnouncer
 vi.mock("@/hooks/useAnnouncer", () => ({
@@ -72,6 +74,25 @@ describe("axe-core 자동 접근성 검증", () => {
         </Button>
       </div>
     );
+
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it("Input 컴포넌트에 접근성 위반이 없다", async () => {
+    const { container } = render(
+      <div>
+        <label htmlFor="test-input">테스트 입력</label>
+        <Input id="test-input" placeholder="입력해주세요" />
+      </div>
+    );
+
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it("Footer 컴포넌트에 접근성 위반이 없다", async () => {
+    const { container } = render(<Footer />);
 
     const results = await axe(container);
     expect(results.violations).toHaveLength(0);

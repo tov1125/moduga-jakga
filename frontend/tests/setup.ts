@@ -98,3 +98,13 @@ class MockIntersectionObserver {
 Object.defineProperty(globalThis, "IntersectionObserver", {
   value: MockIntersectionObserver,
 });
+
+// Mock ResizeObserver (required by Radix UI)
+class MockResizeObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+Object.defineProperty(globalThis, "ResizeObserver", {
+  value: MockResizeObserver,
+});

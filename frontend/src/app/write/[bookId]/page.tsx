@@ -318,13 +318,12 @@ export default function WritingWorkspacePage() {
                 href={`/write/${bookId}/edit`}
                 className="
                   inline-flex items-center justify-center
-                  bg-secondary text-gray-900 dark:text-gray-100
-                  bg-gray-200 dark:bg-gray-700
+                  bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100
                   px-6 py-3 rounded-xl
                   text-base font-semibold
                   no-underline
                   hover:bg-gray-300 dark:hover:bg-gray-600
-                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                   min-h-touch
                 "
                 aria-label="편집 단계로 이동"

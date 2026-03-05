@@ -35,7 +35,7 @@ export function Header() {
           href="/"
           className="
             text-2xl font-bold text-primary-700 dark:text-primary-400
-            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             rounded-lg px-2 py-1
           "
           aria-label="모두가 작가 - 홈으로 이동"
@@ -60,8 +60,8 @@ export function Header() {
                     href="/settings"
                     className="
                       text-gray-600 dark:text-gray-400
-                      hover:text-primary-600 dark:hover:text-primary-400
-                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                      hover:text-primary-700 dark:hover:text-primary-400
+                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                       rounded-lg px-3 py-2 min-h-touch min-w-touch
                       inline-flex items-center
                     "
@@ -84,8 +84,8 @@ export function Header() {
                     href="/login"
                     className="
                       text-gray-600 dark:text-gray-400
-                      hover:text-primary-600 dark:hover:text-primary-400
-                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                      hover:text-primary-700 dark:hover:text-primary-400
+                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                       rounded-lg px-3 py-2 min-h-touch min-w-touch
                       inline-flex items-center
                     "
@@ -96,10 +96,10 @@ export function Header() {
                   <Link
                     href="/signup"
                     className="
-                      bg-primary-600 text-white px-5 py-2.5
+                      bg-primary-400 text-gray-900 px-5 py-2.5
                       rounded-lg font-semibold
-                      hover:bg-primary-700
-                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                      hover:bg-primary-500
+                      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                       min-h-touch inline-flex items-center
                     "
                     aria-label="회원가입"

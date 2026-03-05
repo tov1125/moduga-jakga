@@ -106,7 +106,7 @@ export default function LoginPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="example@email.com"
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 border-2 border-gray-300 dark:border-gray-600
                 rounded-xl
                 focus:border-primary-500 dark:focus:border-primary-400
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                 placeholder:text-gray-400
               "
               placeholder="비밀번호를 입력하세요"
@@ -160,7 +160,7 @@ export default function LoginPage() {
             아직 계정이 없으신가요?{" "}
             <Link
               href="/signup"
-              className="text-primary-600 dark:text-primary-400 font-medium"
+              className="text-primary-700 dark:text-primary-400 font-medium"
             >
               회원가입
             </Link>
