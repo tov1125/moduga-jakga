@@ -9,6 +9,15 @@
 
 ## 기술 스택
 
+### Google Gemini 모델 사용 규칙 (필수 준수)
+
+| 용도 | 모델 | 비고 |
+|------|------|------|
+| 책 디자인 (표지 생성, 디자인 서비스) | `gemini-2.5-flash` | design_service.py에서 사용 |
+| 홈페이지 UI 리디자인 | `gemini-3.1-pro-preview` | 리디자인 전용, 다른 용도 사용 금지 |
+
+> **주의**: 책 디자인 작업에 `gemini-3.1-pro-preview`를 사용하지 마세요. 반드시 `gemini-2.5-flash`를 사용합니다.
+
 ### Frontend
 - **프레임워크**: Next.js (App Router)
 - **언어**: TypeScript
@@ -87,6 +96,8 @@ class UserProfile(BaseModel):
 - 도구: 네이버 맞춤법 검사기 API, py-hanspell, konlpy, LLM
 
 ### 9. 책 디자인
+- **AI 모델: 반드시 `gemini-2.5-flash` 사용** (표지 이미지 생성, 디자인 관련 모든 작업)
+- `gemini-3.1-pro-preview`는 홈페이지 UI 리디자인 전용 — 책 디자인에 절대 사용 금지
 - 표지: AI 이미지 생성 + 장르별 템플릿 합성, 음성으로 선택/수정
 - 내지 조판: LaTeX(XeLaTeX) 또는 Typst 기반 고품질 조판 (InDesign 85% 수준)
 - 한글 폰트: 나눔명조, 본명조 등
