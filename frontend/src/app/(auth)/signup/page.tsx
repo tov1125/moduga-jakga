@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { auth } from "@/lib/api";
 import type { DisabilityType } from "@/types/user";
@@ -27,9 +28,14 @@ export default function SignupPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [disabilityType, setDisabilityType] = useState<DisabilityType>("none");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [agreeCopyright, setAgreeCopyright] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const allAgreed = agreeTerms && agreePrivacy && agreeCopyright;
 
   const validate = useCallback((): boolean => {
     const errors: Record<string, string> = {};
@@ -350,13 +356,83 @@ export default function SignupPage() {
             </p>
           </div>
 
+          {/* Consent checkboxes */}
+          <fieldset className="flex flex-col gap-4">
+            <legend className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+              약관 동의 <span aria-hidden="true">*</span>
+            </legend>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="agree-terms"
+                checked={agreeTerms}
+                onCheckedChange={(checked) => setAgreeTerms(checked === true)}
+                aria-required="true"
+              />
+              <label
+                htmlFor="agree-terms"
+                className="text-base text-gray-700 dark:text-gray-300 leading-snug"
+              >
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="text-primary-600 dark:text-primary-400 underline"
+                >
+                  이용약관
+                </Link>
+                에 동의합니다 (필수)
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="agree-privacy"
+                checked={agreePrivacy}
+                onCheckedChange={(checked) => setAgreePrivacy(checked === true)}
+                aria-required="true"
+              />
+              <label
+                htmlFor="agree-privacy"
+                className="text-base text-gray-700 dark:text-gray-300 leading-snug"
+              >
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="text-primary-600 dark:text-primary-400 underline"
+                >
+                  개인정보처리방침
+                </Link>
+                에 동의합니다 (필수)
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="agree-copyright"
+                checked={agreeCopyright}
+                onCheckedChange={(checked) =>
+                  setAgreeCopyright(checked === true)
+                }
+                aria-required="true"
+              />
+              <label
+                htmlFor="agree-copyright"
+                className="text-base text-gray-700 dark:text-gray-300 leading-snug"
+              >
+                AI 생성 글의 저작권 정책에 동의합니다 (필수)
+              </label>
+            </div>
+          </fieldset>
+
           {/* Submit */}
           <Button
             type="submit"
             variant="primary"
             size="lg"
             isLoading={isLoading}
+            disabled={!allAgreed}
             aria-label="회원가입"
+            aria-disabled={!allAgreed}
             className="w-full"
           >
             회원가입

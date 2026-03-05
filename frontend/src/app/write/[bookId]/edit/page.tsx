@@ -7,6 +7,7 @@ import { QualityReport } from "@/components/editing/QualityReport";
 import { VoicePlayer } from "@/components/voice/VoicePlayer";
 import { Button } from "@/components/ui/Button";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
+import { useEditHistory } from "@/hooks/useEditHistory";
 import {
   books as booksApi,
   chapters as chaptersApi,
@@ -68,6 +69,7 @@ export default function EditingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { push: pushHistory, undo, redo, canUndo, canRedo } = useEditHistory();
 
   /** Debounced save — 500ms delay to avoid request storms on rapid accepts */
   const debouncedSave = useCallback(
@@ -184,6 +186,52 @@ export default function EditingPage() {
     [bookId, activeChapter, chapters, announcePolite, announceAssertive]
   );
 
+  // Undo handler
+  const handleUndo = useCallback(() => {
+    if (!activeChapter) return;
+    const prev = undo();
+    if (prev !== null) {
+      const newChapter = { ...activeChapter, content: prev };
+      setActiveChapter(newChapter);
+      setChapters((cs) =>
+        cs.map((c) => (c.id === newChapter.id ? newChapter : c))
+      );
+      debouncedSave(activeChapter.id, prev);
+      announcePolite("되돌리기 완료");
+    }
+  }, [activeChapter, undo, debouncedSave, announcePolite]);
+
+  // Redo handler
+  const handleRedo = useCallback(() => {
+    if (!activeChapter) return;
+    const next = redo();
+    if (next !== null) {
+      const newChapter = { ...activeChapter, content: next };
+      setActiveChapter(newChapter);
+      setChapters((cs) =>
+        cs.map((c) => (c.id === newChapter.id ? newChapter : c))
+      );
+      debouncedSave(activeChapter.id, next);
+      announcePolite("다시 실행 완료");
+    }
+  }, [activeChapter, redo, debouncedSave, announcePolite]);
+
+  // Keyboard shortcuts: Ctrl+Z / Ctrl+Shift+Z
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      } else if (mod && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        handleRedo();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleUndo, handleRedo]);
+
   // Accept suggestion — apply text change + save
   const handleAcceptSuggestion = useCallback(
     (suggestionId: string) => {
@@ -191,6 +239,9 @@ export default function EditingPage() {
 
       const suggestion = suggestions.find((s) => s.id === suggestionId);
       if (!suggestion) return;
+
+      // Save current content to history before applying
+      pushHistory(activeChapter.content);
 
       const updated = applySuggestion(activeChapter.content, suggestion);
 
@@ -242,7 +293,7 @@ export default function EditingPage() {
         }
       }
     },
-    [activeChapter, suggestions, debouncedSave, announcePolite]
+    [activeChapter, suggestions, debouncedSave, announcePolite, pushHistory]
   );
 
   // Reject suggestion
@@ -255,6 +306,9 @@ export default function EditingPage() {
   // Accept all — apply in reverse position order to avoid offset shifts
   const handleAcceptAll = useCallback(() => {
     if (!activeChapter) return;
+
+    // Save current content to history before applying all
+    pushHistory(activeChapter.content);
 
     const pending = suggestions.filter(
       (s) => s.accepted === null && s.type !== "structure"
@@ -308,7 +362,7 @@ export default function EditingPage() {
     }
 
     announcePolite(`${appliedCount}개 수정이 모두 적용되었습니다`);
-  }, [activeChapter, suggestions, debouncedSave, announcePolite]);
+  }, [activeChapter, suggestions, debouncedSave, announcePolite, pushHistory]);
 
   // Load quality report
   const handleLoadReport = useCallback(async () => {
@@ -339,6 +393,24 @@ export default function EditingPage() {
           {book?.title} - 편집
         </h1>
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleUndo}
+            disabled={!canUndo}
+            aria-label="되돌리기 (Ctrl+Z)"
+          >
+            되돌리기
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRedo}
+            disabled={!canRedo}
+            aria-label="다시 실행 (Ctrl+Shift+Z)"
+          >
+            다시 실행
+          </Button>
           {isSaving && (
             <span className="text-sm text-gray-500 dark:text-gray-400" role="status">
               저장 중...

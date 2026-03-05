@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSupabase } from "@/hooks/useSupabase";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
@@ -42,8 +43,9 @@ export function Header() {
           모두가 작가
         </Link>
 
-        {/* User actions */}
+        {/* Theme toggle + User actions */}
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           {!isLoading && (
             <>
               {user ? (

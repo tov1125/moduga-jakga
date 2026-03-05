@@ -1,20 +1,30 @@
-FROM node:20-slim
-
+# --- Stage 1: Install dependencies ---
+FROM node:20-slim AS deps
 WORKDIR /app
-
-# 의존성 먼저 복사하여 Docker 캐시 활용
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci --omit=dev
 
-# 소스 코드 복사
+# --- Stage 2: Build ---
+FROM node:20-slim AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
 
-# 포트 노출
+# --- Stage 3: Production ---
+FROM node:20-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
 EXPOSE 3000
 
-# 헬스체크
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:3000 || exit 1
 
-# 앱 실행 (프로덕션 빌드 후 시작)
-CMD ["npm", "run", "dev"]
+CMD ["node", "server.js"]

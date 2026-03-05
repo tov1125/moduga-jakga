@@ -89,6 +89,18 @@ export function useSTT(): UseSTTReturn {
       wsRef.current = ws;
 
       ws.onopen = () => {
+        // Send auth token if available
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("access_token")
+            : null;
+        if (token) {
+          ws.send(JSON.stringify({ type: "auth", token }));
+        }
+
+        // Send config (language)
+        ws.send(JSON.stringify({ type: "config", language: "ko" }));
+
         voiceCtx?.setSttState("recording");
         announceAssertive("녹음을 시작합니다");
 
