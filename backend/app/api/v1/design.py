@@ -32,7 +32,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="에세이 미니멀",
         genre=Genre.ESSAY,
         style=CoverStyle.MINIMALIST,
-        preview_url="/static/templates/essay_minimal.png",
+        preview_url="",
         description="깔끔하고 여백을 살린 에세이 표지",
     ),
     CoverTemplate(
@@ -40,7 +40,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="소설 일러스트",
         genre=Genre.NOVEL,
         style=CoverStyle.ILLUSTRATED,
-        preview_url="/static/templates/novel_illustrated.png",
+        preview_url="",
         description="분위기 있는 일러스트 소설 표지",
     ),
     CoverTemplate(
@@ -48,7 +48,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="시집 타이포",
         genre=Genre.POEM,
         style=CoverStyle.TYPOGRAPHY,
-        preview_url="/static/templates/poem_typography.png",
+        preview_url="",
         description="아름다운 타이포그래피 시집 표지",
     ),
     CoverTemplate(
@@ -56,7 +56,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="자서전 포토",
         genre=Genre.AUTOBIOGRAPHY,
         style=CoverStyle.PHOTOGRAPHIC,
-        preview_url="/static/templates/auto_photo.png",
+        preview_url="",
         description="사진 기반 자서전 표지",
     ),
     CoverTemplate(
@@ -64,7 +64,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="동화 일러스트",
         genre=Genre.CHILDREN,
         style=CoverStyle.ILLUSTRATED,
-        preview_url="/static/templates/children_illustrated.png",
+        preview_url="",
         description="밝고 따뜻한 동화책 표지",
     ),
     CoverTemplate(
@@ -72,7 +72,7 @@ DEFAULT_TEMPLATES: list[CoverTemplate] = [
         name="추상 범용",
         genre=Genre.OTHER,
         style=CoverStyle.ABSTRACT,
-        preview_url="/static/templates/abstract_general.png",
+        preview_url="",
         description="모든 장르에 어울리는 추상적 표지",
     ),
 ]
@@ -89,7 +89,7 @@ async def generate_cover(
     settings: Settings = Depends(get_settings),
 ) -> CoverGenerateResponse:
     """
-    DALL-E를 사용하여 도서 표지 이미지를 생성합니다.
+    Google Gemini를 사용하여 도서 표지 이미지를 생성합니다.
     장르, 스타일, 색상 테마를 기반으로 적합한 표지를 만듭니다.
     """
     if not request.book_title.strip():
@@ -110,6 +110,17 @@ async def generate_cover(
             color_scheme=request.color_scheme,
         )
         return result
+    except RuntimeError as e:
+        err_msg = str(e)
+        if "사용량 한도" in err_msg:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=err_msg,
+            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="표지 생성에 실패했습니다.",
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

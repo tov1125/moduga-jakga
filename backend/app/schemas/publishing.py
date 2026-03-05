@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-from pydantic import Field, StrictBool, StrictFloat, StrictStr
+from pydantic import Field, StrictBool, StrictFloat, StrictInt, StrictStr
 
 from app.schemas.base import StrictBaseModel
 from app.schemas.design import PageSize
@@ -54,5 +54,5 @@ class ExportResponse(StrictBaseModel):
     format: ExportFormat
     status: ExportStatusEnum
     download_url: StrictStr | None = None
-    file_size_bytes: StrictStr | None = None
+    file_size_bytes: StrictInt | None = None
     created_at: StrictStr

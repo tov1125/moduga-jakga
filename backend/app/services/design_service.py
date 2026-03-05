@@ -30,6 +30,7 @@ from app.schemas.design import (
 logger = logging.getLogger(__name__)
 
 COVERS_DIR = Path(__file__).resolve().parent.parent.parent / "static" / "covers"
+PREVIEWS_DIR = Path(__file__).resolve().parent.parent.parent / "static" / "previews"
 
 # 표지 스타일별 프롬프트 키워드
 STYLE_KEYWORDS: dict[str, str] = {
@@ -166,6 +167,11 @@ class DesignService:
 
         except Exception as e:
             logger.error(f"표지 생성 중 오류: {e}")
+            err_msg = str(e).lower()
+            if "429" in err_msg or "resource_exhausted" in err_msg:
+                raise RuntimeError(
+                    "AI 이미지 생성 API 사용량 한도에 도달했습니다. 잠시 후 다시 시도해주세요."
+                ) from e
             raise
 
     async def generate_layout_preview(
@@ -260,19 +266,20 @@ class DesignService:
             source: Typst 소스 코드
 
         Returns:
-            (생성된 PDF 경로, 총 페이지 수) 튜플
+            (미리보기 URL, 총 페이지 수) 튜플
         """
+        PREVIEWS_DIR.mkdir(parents=True, exist_ok=True)
+        preview_id = uuid.uuid4().hex
+
         with tempfile.TemporaryDirectory() as tmp_dir:
             src_path = os.path.join(tmp_dir, "book.typ")
-            pdf_path = os.path.join(tmp_dir, "book.pdf")
+            tmp_pdf = os.path.join(tmp_dir, "book.pdf")
 
-            # Typst 소스 저장
             with open(src_path, "w", encoding="utf-8") as f:
                 f.write(source)
 
-            # Typst 컴파일 실행
             result = subprocess.run(
-                ["typst", "compile", src_path, pdf_path],
+                ["typst", "compile", src_path, tmp_pdf],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -281,12 +288,15 @@ class DesignService:
             if result.returncode != 0:
                 raise RuntimeError(f"Typst 컴파일 오류: {result.stderr}")
 
-            # 페이지 수 확인 (Typst 출력에서 추출하거나 PDF에서 계산)
-            total_pages = self._count_pdf_pages(pdf_path)
+            total_pages = self._count_pdf_pages(tmp_pdf)
 
-            # 실제 서비스에서는 파일을 스토리지에 업로드하고 URL 반환
-            # 여기서는 로컬 경로를 반환
-            return pdf_path, total_pages
+            # static/previews/에 복사하여 URL 접근 가능하게
+            dest_path = PREVIEWS_DIR / f"{preview_id}.pdf"
+            import shutil
+            shutil.copy2(tmp_pdf, dest_path)
+
+        preview_url = f"/static/previews/{preview_id}.pdf"
+        return preview_url, total_pages
 
     def _count_pdf_pages(self, pdf_path: str) -> int:
         """

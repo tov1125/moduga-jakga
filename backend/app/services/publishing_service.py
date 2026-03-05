@@ -74,18 +74,27 @@ class PublishingService:
         }).eq("id", export_id).execute()
 
         try:
+            # 표지 이미지 경로 결정
+            cover_image_path: str | None = None
+            if include_cover and book_data.get("cover_url"):
+                cover_image_path = await self._resolve_cover_path(
+                    book_data["cover_url"]
+                )
+
             # 형식별 내보내기 처리
             if export_format == ExportFormat.DOCX:
                 file_path = await self._export_docx(
-                    export_id, book_data, chapters, include_toc
+                    export_id, book_data, chapters, include_toc, cover_image_path
                 )
             elif export_format == ExportFormat.PDF:
                 file_path = await self._export_pdf(
-                    export_id, book_data, chapters, page_size, include_toc
+                    export_id, book_data, chapters, page_size, include_toc,
+                    cover_image_path
                 )
             elif export_format == ExportFormat.EPUB:
                 file_path = await self._export_epub(
-                    export_id, book_data, chapters, include_toc, accessibility_tags
+                    export_id, book_data, chapters, include_toc, accessibility_tags,
+                    cover_image_path
                 )
             else:
                 raise ValueError(f"지원하지 않는 형식: {export_format}")
@@ -117,6 +126,7 @@ class PublishingService:
         book_data: dict[str, Any],
         chapters: list[dict[str, Any]],
         include_toc: bool = True,
+        cover_image_path: str | None = None,
     ) -> str:
         """
         DOCX 형식으로 내보냅니다.
@@ -141,6 +151,11 @@ class PublishingService:
         font = style.font
         font.name = "맑은 고딕"
         font.size = Pt(11)
+
+        # 표지 이미지 삽입
+        if cover_image_path and os.path.exists(cover_image_path):
+            doc.add_picture(cover_image_path, width=Inches(5.0))
+            doc.add_page_break()
 
         # 제목 페이지
         title_para = doc.add_paragraph()
@@ -200,6 +215,7 @@ class PublishingService:
         chapters: list[dict[str, Any]],
         page_size: PageSize = PageSize.A5,
         include_toc: bool = True,
+        cover_image_path: str | None = None,
     ) -> str:
         """
         PDF 형식으로 내보냅니다. Typst를 사용하여 조판합니다.
@@ -231,12 +247,24 @@ class PublishingService:
             '#set text(font: "Noto Sans CJK KR", size: 11pt, lang: "ko")',
             "#set par(leading: 0.8em, justify: true)",
             "",
+        ]
+
+        # 표지 이미지 삽입
+        if cover_image_path and os.path.exists(cover_image_path):
+            escaped_path = cover_image_path.replace("\\", "/")
+            typst_parts.extend([
+                "// 표지",
+                f'#align(center + horizon)[#image("{escaped_path}", width: 100%)]',
+                "#pagebreak()",
+            ])
+
+        typst_parts.extend([
             "// 제목 페이지",
             "#align(center + horizon)[",
             f"  #text(size: 24pt, weight: \"bold\")[{self._escape_typst(title)}]",
             "]",
             "#pagebreak()",
-        ]
+        ])
 
         # 목차
         if include_toc:
@@ -295,6 +323,7 @@ class PublishingService:
         chapters: list[dict[str, Any]],
         include_toc: bool = True,
         accessibility_tags: bool = True,
+        cover_image_path: str | None = None,
     ) -> str:
         """
         EPUB 형식으로 내보냅니다. 접근성 태그를 포함합니다.
@@ -319,6 +348,19 @@ class PublishingService:
         book.set_title(title)
         book.set_language("ko")
         book.add_author(book_data.get("author_name", "작가"))
+
+        # 표지 이미지 삽입
+        if cover_image_path and os.path.exists(cover_image_path):
+            with open(cover_image_path, "rb") as img_f:
+                cover_data = img_f.read()
+            cover_item = epub.EpubItem(
+                uid="cover-image",
+                file_name="images/cover.png",
+                media_type="image/png",
+                content=cover_data,
+            )
+            book.add_item(cover_item)
+            book.set_cover("images/cover.png", cover_data)
 
         # 접근성 메타데이터 (EPUB Accessibility 규격)
         if accessibility_tags:
@@ -463,3 +505,15 @@ class PublishingService:
         for char, escaped in replacements.items():
             text = text.replace(char, escaped)
         return text
+
+    async def _resolve_cover_path(self, cover_url: str) -> str | None:
+        """
+        표지 URL을 로컬 파일 경로로 변환합니다.
+        /static/covers/xxx.png 형태의 상대 경로를 절대 경로로 변환합니다.
+        """
+        if cover_url.startswith("/static/"):
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            local_path = os.path.join(base_dir, cover_url.lstrip("/"))
+            if os.path.exists(local_path):
+                return local_path
+        return None
