@@ -251,11 +251,11 @@ export default function DesignPage() {
           href={`/publish/${bookId}`}
           className="
             inline-flex items-center justify-center
-            bg-primary-400 text-gray-900
+            bg-primary-500 text-white
             px-6 py-3 rounded-xl
             text-base font-semibold
             no-underline
-            hover:bg-primary-500
+            hover:bg-primary-600
             focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
             min-h-touch
           "

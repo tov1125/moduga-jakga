@@ -96,9 +96,9 @@ export function Header() {
                   <Link
                     href="/signup"
                     className="
-                      bg-primary-400 text-gray-900 px-5 py-2.5
+                      bg-primary-500 text-white px-5 py-2.5
                       rounded-lg font-semibold
-                      hover:bg-primary-500
+                      hover:bg-primary-600
                       focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600
                       min-h-touch inline-flex items-center
                     "

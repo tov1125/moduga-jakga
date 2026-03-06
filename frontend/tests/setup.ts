@@ -12,22 +12,18 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-// Mock next/link
-vi.mock("next/link", () => ({
-  default: ({
-    children,
-    href,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-    [key: string]: unknown;
-  }) => {
-    return `<a href="${href}" ${Object.entries(props)
-      .map(([k, v]) => `${k}="${v}"`)
-      .join(" ")}>${children}</a>`;
-  },
-}));
+// Mock next/link — return proper JSX element for testing-library
+vi.mock("next/link", () => {
+  const React = require("react");
+  return {
+    default: React.forwardRef(function MockLink(
+      { href, children, ...props }: Record<string, unknown>,
+      ref: unknown,
+    ) {
+      return React.createElement("a", { href, ref, ...props }, children);
+    }),
+  };
+});
 
 // Mock MediaRecorder for voice tests
 class MockMediaRecorder {
@@ -87,6 +83,21 @@ Object.defineProperty(globalThis.navigator, "mediaDevices", {
       getTracks: () => [{ stop: vi.fn() }],
     }),
   },
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
 // Mock IntersectionObserver

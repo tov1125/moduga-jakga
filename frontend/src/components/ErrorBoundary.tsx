@@ -44,8 +44,8 @@ export class ErrorBoundary extends Component<
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-primary-400 text-gray-900 rounded-xl text-lg font-medium
-              hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4
+            className="px-6 py-3 bg-primary-500 text-white rounded-xl text-lg font-medium
+              hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-4
               focus-visible:ring-primary-600"
             aria-label="페이지 새로고침"
           >
