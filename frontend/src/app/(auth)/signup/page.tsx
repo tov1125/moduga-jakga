@@ -32,6 +32,7 @@ export default function SignupPage() {
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeCopyright, setAgreeCopyright] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -86,10 +87,15 @@ export default function SignupPage() {
         router.push("/login");
       } catch (err) {
         if (err instanceof ApiError && err.status === 409) {
-          announcePolite("이미 가입된 이메일입니다. 로그인 페이지로 이동합니다.");
-          router.push("/login");
+          setIsDuplicateEmail(true);
+          setError(null);
+          announceAssertive(
+            "이미 가입된 이메일입니다. 로그인 페이지로 이동해 주세요."
+          );
+          window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         }
+        setIsDuplicateEmail(false);
         const message =
           err instanceof Error
             ? err.message
@@ -126,8 +132,27 @@ export default function SignupPage() {
           className="flex flex-col gap-6"
           aria-label="회원가입 양식"
         >
+          {/* Duplicate email notice */}
+          {isDuplicateEmail && (
+            <div
+              className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+              role="alert"
+              aria-live="assertive"
+            >
+              <p className="text-blue-800 dark:text-blue-200 text-base font-medium mb-3">
+                이미 가입된 이메일입니다.
+              </p>
+              <Link
+                href="/login"
+                className="inline-block px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg text-base transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-600"
+              >
+                로그인하러 가기
+              </Link>
+            </div>
+          )}
+
           {/* Error message */}
-          {error && (
+          {error && !isDuplicateEmail && (
             <div
               className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
               role="alert"
