@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
-import { auth } from "@/lib/api";
+import { auth, ApiError } from "@/lib/api";
 import type { DisabilityType } from "@/types/user";
 
 const DISABILITY_OPTIONS: { value: DisabilityType; label: string }[] = [
@@ -85,6 +85,11 @@ export default function SignupPage() {
         );
         router.push("/login");
       } catch (err) {
+        if (err instanceof ApiError && err.status === 409) {
+          announcePolite("이미 가입된 이메일입니다. 로그인 페이지로 이동합니다.");
+          router.push("/login");
+          return;
+        }
         const message =
           err instanceof Error
             ? err.message

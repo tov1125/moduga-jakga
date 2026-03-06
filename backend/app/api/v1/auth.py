@@ -54,8 +54,22 @@ async def signup(
     """
     새 사용자를 등록합니다.
     Supabase Auth로 계정을 생성하고 프로필 테이블에 추가 정보를 저장합니다.
+    이메일 확인을 자동으로 처리하여 즉시 로그인 가능합니다.
     """
     try:
+        # 이미 존재하는 이메일인지 확인
+        existing = (
+            admin_client.table("profiles")
+            .select("id")
+            .eq("email", request.email)
+            .execute()
+        )
+        if existing.data:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
+            )
+
         # Supabase Auth로 사용자 생성
         auth_response = supabase.auth.sign_up(
             {
@@ -71,6 +85,14 @@ async def signup(
             )
 
         user_id = auth_response.user.id
+
+        # 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
+        try:
+            admin_client.auth.admin.update_user_by_id(
+                user_id, {"email_confirm": True}
+            )
+        except Exception:
+            pass  # 이미 확인된 경우 무시
 
         # 프로필 테이블에 추가 정보 저장
         profile_data = {
