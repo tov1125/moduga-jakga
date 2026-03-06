@@ -40,9 +40,13 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
   const [exportStatus, setExportStatus] = useState<ExportStatus | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [pollFailCount, setPollFailCount] = useState(0);
+
   const handleExport = useCallback(async () => {
     setIsExporting(true);
     setError(null);
+    setPollFailCount(0);
     announcePolite(`${FORMAT_LABELS[selectedFormat]} 형식으로 내보내기를 시작합니다`);
 
     try {
