@@ -57,20 +57,34 @@ async def signup(
     이메일 확인을 자동으로 처리하여 즉시 로그인 가능합니다.
     """
     try:
-        # 이미 존재하는 이메일인지 확인
-        existing = (
+        # 1) profiles 테이블에서 이메일 중복 확인
+        existing_profile = (
             admin_client.table("profiles")
             .select("id")
             .eq("email", request.email)
             .execute()
         )
-        if existing.data:
+        if existing_profile.data:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
             )
 
-        # Supabase Auth로 사용자 생성
+        # 2) auth.users에서도 이메일 중복 확인 (profiles 없이 auth만 있는 경우)
+        try:
+            existing_users = admin_client.auth.admin.list_users()
+            for u in existing_users:
+                if u.email == request.email:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
+                    )
+        except HTTPException:
+            raise
+        except Exception:
+            pass  # auth 조회 실패 시 계속 진행
+
+        # 3) Supabase Auth로 사용자 생성
         auth_response = supabase.auth.sign_up(
             {
                 "email": request.email,
@@ -86,7 +100,7 @@ async def signup(
 
         user_id = auth_response.user.id
 
-        # 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
+        # 4) 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
         try:
             admin_client.auth.admin.update_user_by_id(
                 user_id, {"email_confirm": True}
@@ -94,14 +108,23 @@ async def signup(
         except Exception:
             pass  # 이미 확인된 경우 무시
 
-        # 프로필 테이블에 추가 정보 저장
+        # 5) 프로필 테이블에 추가 정보 저장 (제약 조건 위반 처리)
         profile_data = {
             "id": user_id,
             "email": request.email,
             "display_name": request.display_name,
             "disability_type": request.disability_type.value,
         }
-        profile_response = admin_client.table("profiles").insert(profile_data).execute()
+        try:
+            profile_response = admin_client.table("profiles").insert(profile_data).execute()
+        except Exception as insert_err:
+            err_msg = str(insert_err).lower()
+            if "duplicate" in err_msg or "unique" in err_msg or "23505" in err_msg:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
+                )
+            raise
 
         if not profile_response.data:
             raise HTTPException(
@@ -114,10 +137,10 @@ async def signup(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"회원가입 처리 중 오류가 발생했습니다: {e}",
+            detail="회원가입 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
         )
 
 
