@@ -41,7 +41,7 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // M-12: 폴링 실패 횟수 추적
-  const [pollFailCount, setPollFailCount] = useState(0);
+  const [_pollFailCount, setPollFailCount] = useState(0);
 
   const handleExport = useCallback(async () => {
     setIsExporting(true);
