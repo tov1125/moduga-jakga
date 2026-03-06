@@ -39,7 +39,12 @@ export default function LoginPage() {
         if (response.data.access_token) {
           localStorage.setItem("access_token", response.data.access_token);
         }
-        await refreshUser();
+        // M-04: refreshUser 실패해도 토큰 기반으로 대시보드 이동 가능
+        try {
+          await refreshUser();
+        } catch {
+          // refreshUser 실패는 무시 — 토큰이 저장되었으므로 대시보드에서 재시도
+        }
         announcePolite("로그인되었습니다. 대시보드로 이동합니다.");
         router.push("/dashboard");
       } catch (err) {

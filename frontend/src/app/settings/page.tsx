@@ -61,6 +61,13 @@ export default function SettingsPage() {
   }, []);
 
   const handleSave = useCallback(async () => {
+    // M-13: 빈 displayName 방지 (BE min_length=1 → 422 에러 방지)
+    if (!displayName.trim()) {
+      setMessage({ type: "error", text: "이름(필명)을 입력해 주세요." });
+      announceAssertive("이름(필명)을 입력해 주세요.");
+      return;
+    }
+
     setIsSaving(true);
     setMessage(null);
 

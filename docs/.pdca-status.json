@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-05T16:28:26.259Z",
+  "lastUpdated": "2026-03-06T06:56:47.253Z",
   "activeFeatures": [
     "sprint11-e2e-coverage",
     "sprint10-deploy-coverage-e2e",
@@ -10,7 +10,17 @@
     "ui",
     "layout",
     "dashboard",
-    "[bookId]"
+    "[bookId]",
+    "landing",
+    "tests",
+    "signup",
+    "v1",
+    "api",
+    "core",
+    "edit",
+    "book",
+    "login",
+    "settings"
   ],
   "primaryFeature": "sprint11-e2e-coverage",
   "features": {
@@ -90,9 +100,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-05T16:12:20.738Z",
-        "lastUpdated": "2026-03-05T16:15:59.105Z"
+        "lastUpdated": "2026-03-06T06:54:54.358Z"
       },
-      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/tailwind.config.ts"
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/types/book.ts"
     },
     "ui": {
       "phase": "do",
@@ -103,9 +113,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-05T16:13:31.898Z",
-        "lastUpdated": "2026-03-05T16:28:26.259Z"
+        "lastUpdated": "2026-03-06T02:46:46.925Z"
       },
-      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/ui/radio-group.tsx"
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/ui/checkbox.tsx"
     },
     "layout": {
       "phase": "do",
@@ -142,9 +152,139 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-05T16:27:55.484Z",
-        "lastUpdated": "2026-03-05T16:27:55.484Z"
+        "lastUpdated": "2026-03-06T06:56:32.757Z"
       },
-      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/write/[bookId]/page.tsx"
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/design/[bookId]/page.tsx"
+    },
+    "landing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:55:22.765Z",
+        "lastUpdated": "2026-03-06T02:47:35.533Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/landing/LandingContent.tsx"
+    },
+    "tests": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T16:56:19.694Z",
+        "lastUpdated": "2026-03-06T03:00:36.835Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/tests/lib/api.test.ts"
+    },
+    "signup": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T04:17:02.131Z",
+        "lastUpdated": "2026-03-06T06:16:43.607Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/(auth)/signup/page.tsx"
+    },
+    "v1": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T04:40:30.650Z",
+        "lastUpdated": "2026-03-06T06:55:16.747Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/backend/app/api/v1/publishing.py"
+    },
+    "api": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:23:42.494Z",
+        "lastUpdated": "2026-03-06T06:23:42.495Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/backend/app/api/deps.py"
+    },
+    "core": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:50:50.206Z",
+        "lastUpdated": "2026-03-06T06:50:54.540Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/backend/app/core/security.py"
+    },
+    "edit": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:54:13.127Z",
+        "lastUpdated": "2026-03-06T06:54:40.067Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/write/[bookId]/edit/page.tsx"
+    },
+    "book": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:55:31.592Z",
+        "lastUpdated": "2026-03-06T06:55:38.294Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/components/book/ExportPanel.tsx"
+    },
+    "login": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:56:40.280Z",
+        "lastUpdated": "2026-03-06T06:56:40.280Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/(auth)/login/page.tsx"
+    },
+    "settings": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-06T06:56:47.253Z",
+        "lastUpdated": "2026-03-06T06:56:47.253Z"
+      },
+      "lastFile": "/Users/tov/Documents/[AI] Project/project_StartFolio/AI_PJ_SF_모두가 작가/frontend/src/app/settings/page.tsx"
     }
   },
   "pipeline": {
@@ -155,7 +295,7 @@
   "session": {
     "startedAt": "2026-03-03T03:00:00.000Z",
     "onboardingCompleted": true,
-    "lastActivity": "2026-03-05T16:28:26.259Z"
+    "lastActivity": "2026-03-06T06:56:47.253Z"
   },
   "history": [
     {
@@ -311,6 +451,342 @@
     {
       "timestamp": "2026-03-05T16:28:26.259Z",
       "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:54:18.856Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:55:22.765Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:55:40.156Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:56:19.694Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:57:03.936Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T16:57:28.809Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:22:10.697Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:22:29.887Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:46:46.925Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:03.559Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:08.747Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:14.277Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:19.250Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:24.820Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:30.187Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:47:35.533Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:58:58.138Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:59:12.286Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T02:59:57.555Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T03:00:36.835Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T04:16:55.638Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T04:17:02.131Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T04:40:30.650Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T04:41:32.542Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T04:41:38.577Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T05:37:20.675Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:16:25.722Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:16:34.002Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:16:43.607Z",
+      "feature": "signup",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:23:42.495Z",
+      "feature": "api",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:23:54.867Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:24:06.233Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:24:27.141Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:24:38.255Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:48:42.377Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:49:33.055Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:50:03.109Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:50:16.047Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:50:50.207Z",
+      "feature": "core",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:50:54.540Z",
+      "feature": "core",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:51:19.774Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:54:13.127Z",
+      "feature": "edit",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:54:22.729Z",
+      "feature": "edit",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:54:30.657Z",
+      "feature": "edit",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:54:40.067Z",
+      "feature": "edit",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:54:54.358Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:55:05.923Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:55:16.747Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:55:31.592Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:55:38.294Z",
+      "feature": "book",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:01.286Z",
+      "feature": "[bookId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:23.030Z",
+      "feature": "[bookId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:27.403Z",
+      "feature": "[bookId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:32.757Z",
+      "feature": "[bookId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:40.280Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-06T06:56:47.253Z",
+      "feature": "settings",
       "phase": "do",
       "action": "updated"
     }

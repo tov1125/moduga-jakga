@@ -142,6 +142,12 @@ export default function WritingWorkspacePage() {
   const handleGenerate = useCallback(async () => {
     if (!activeChapter) return;
 
+    // M-02: 빈 prompt 방지
+    if (!transcript.trim() && !content.trim()) {
+      announceAssertive("AI 생성을 위해 먼저 음성 녹음이나 텍스트를 입력해 주세요.");
+      return;
+    }
+
     setIsStreaming(true);
     setStreamedText("");
     announcePolite("AI가 글을 생성하고 있습니다");

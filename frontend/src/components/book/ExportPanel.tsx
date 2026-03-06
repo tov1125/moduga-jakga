@@ -40,10 +40,13 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
   const [exportStatus, setExportStatus] = useState<ExportStatus | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // M-12: 폴링 실패 횟수 추적
+  const [pollFailCount, setPollFailCount] = useState(0);
 
   const handleExport = useCallback(async () => {
     setIsExporting(true);
     setError(null);
+    setPollFailCount(0);
     announcePolite(`${FORMAT_LABELS[selectedFormat]} 형식으로 내보내기를 시작합니다`);
 
     try {
@@ -91,7 +94,16 @@ export function ExportPanel({ bookId, bookTitle, className = "" }: ExportPanelPr
           setIsExporting(false);
         }
       } catch {
-        // Silently retry
+        // M-12: 최대 10회 실패 시 무한 대기 방지
+        setPollFailCount((prev) => {
+          const next = prev + 1;
+          if (next >= 10) {
+            setError("상태 확인에 실패했습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
+            announceAssertive("내보내기 상태 확인 실패");
+            setIsExporting(false);
+          }
+          return next;
+        });
       }
     }, 3000);
 

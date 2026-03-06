@@ -53,15 +53,26 @@ async function apiFetch<T>(
   });
 
   if (!response.ok) {
+    // H-01: 401 → 세션 만료 처리 (로그인 페이지로 리다이렉트)
+    if (response.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("access_token");
+      // 로그인 페이지가 아닌 경우에만 리다이렉트
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login?expired=1";
+      }
+    }
+
     const errorBody = await response.json().catch(() => ({
       error: { code: "UNKNOWN", message: response.statusText },
     }));
     const message =
-      errorBody.detail ||
-      errorBody.error?.message ||
-      errorBody.message ||
-      response.statusText ||
-      "요청 처리에 실패했습니다.";
+      response.status === 401
+        ? "세션이 만료되었습니다. 다시 로그인해 주세요."
+        : errorBody.detail ||
+          errorBody.error?.message ||
+          errorBody.message ||
+          response.statusText ||
+          "요청 처리에 실패했습니다.";
     throw new ApiError(
       message,
       response.status,
@@ -242,6 +253,10 @@ export const writing = {
         // Parse SSE events
         const lines = text.split("\n");
         for (const line of lines) {
+          // M-01: SSE 에러 이벤트 감지 — 텍스트 삽입 대신 에러 throw
+          if (line.startsWith("event: error")) {
+            continue; // 다음 data 라인에서 에러 메시지 처리
+          }
           if (line.startsWith("data: ")) {
             const data = line.slice(6);
             if (data === "[DONE]") {
@@ -250,12 +265,19 @@ export const writing = {
             }
             try {
               const parsed = JSON.parse(data);
+              // 에러 응답 감지
+              if (parsed.error) {
+                controller.error(new ApiError(parsed.error, 500, "SSE_ERROR"));
+                return;
+              }
               if (parsed.text) {
                 controller.enqueue(parsed.text);
               }
             } catch {
-              // Raw text chunk
-              controller.enqueue(data);
+              // 에러 메시지가 아닌 경우만 텍스트로 처리
+              if (data.trim() && !data.includes("error")) {
+                controller.enqueue(data);
+              }
             }
           }
         }

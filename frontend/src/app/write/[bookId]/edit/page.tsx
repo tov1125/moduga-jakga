@@ -72,6 +72,7 @@ export default function EditingPage() {
   const { push: pushHistory, undo, redo, canUndo, canRedo } = useEditHistory();
 
   /** Debounced save — 500ms delay to avoid request storms on rapid accepts */
+  // M-08: 저장 실패 시 1회 재시도
   const debouncedSave = useCallback(
     (chapterId: string, content: string) => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -81,7 +82,13 @@ export default function EditingPage() {
           await chaptersApi.update(bookId, chapterId, { content });
           announcePolite("저장되었습니다");
         } catch {
-          announceAssertive("저장에 실패했습니다. 다시 시도해주세요.");
+          // 1회 재시도
+          try {
+            await chaptersApi.update(bookId, chapterId, { content });
+            announcePolite("저장되었습니다");
+          } catch {
+            announceAssertive("저장에 실패했습니다. 다시 시도해주세요.");
+          }
         } finally {
           setIsSaving(false);
         }
@@ -124,6 +131,22 @@ export default function EditingPage() {
   const handleRunAnalysis = useCallback(
     async (stage: EditingStage) => {
       if (!activeChapter) return;
+
+      // M-07/M-18: 빈 content 시 분석 스킵 (불명확 에러 + LLM 비용 방지)
+      if (!activeChapter.content.trim()) {
+        announceAssertive("분석할 내용이 없습니다. 먼저 글을 작성해 주세요.");
+        return;
+      }
+
+      // M-15: 구조 분석 시 빈 챕터 필터
+      if (stage === "structure") {
+        const nonEmpty = chapters.filter((c) => c.content.trim());
+        if (nonEmpty.length === 0) {
+          announceAssertive("분석할 챕터가 없습니다. 먼저 글을 작성해 주세요.");
+          return;
+        }
+      }
+
       setIsAnalyzing(true);
       setSuggestions([]);
       announcePolite("분석을 진행하고 있습니다. 잠시 기다려 주세요.");
@@ -132,9 +155,10 @@ export default function EditingPage() {
         let mapped: EditSuggestion[] = [];
         switch (stage) {
           case "structure": {
+            // M-15: 빈 content 챕터 제외
             const structRes = await editingApi.structureReview(
               bookId,
-              chapters.map((c) => c.content)
+              chapters.filter((c) => c.content.trim()).map((c) => c.content)
             );
             mapped = structRes.data.suggestions.map((s, i) => ({
               id: `struct-${i}`,
@@ -364,11 +388,11 @@ export default function EditingPage() {
     announcePolite(`${appliedCount}개 수정이 모두 적용되었습니다`);
   }, [activeChapter, suggestions, debouncedSave, announcePolite, pushHistory]);
 
-  // Load quality report
+  // H-06: fullReview 호출로 변경 — 기존 report()는 GET이라 첫 검토 시 404
   const handleLoadReport = useCallback(async () => {
     setIsLoadingReport(true);
     try {
-      const response = await editingApi.report(bookId);
+      const response = await editingApi.fullReview(bookId);
       setReport(response.data);
       announcePolite("품질 보고서가 준비되었습니다");
     } catch {
@@ -376,7 +400,7 @@ export default function EditingPage() {
     } finally {
       setIsLoadingReport(false);
     }
-  }, [bookId, activeChapter, announcePolite, announceAssertive]);
+  }, [bookId, announcePolite, announceAssertive]);
 
   if (isLoading) {
     return (

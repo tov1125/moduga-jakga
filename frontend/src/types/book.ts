@@ -144,6 +144,6 @@ export interface ExportResponse {
   format: ExportFormat;
   status: "pending" | "processing" | "completed" | "failed";
   download_url: string | null;
-  file_size_bytes: string | null;
+  file_size_bytes: number | null;
   created_at: string;
 }

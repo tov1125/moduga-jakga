@@ -69,21 +69,8 @@ async def signup(
                 detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
             )
 
-        # 2) auth.users에서도 이메일 중복 확인 (profiles 없이 auth만 있는 경우)
-        try:
-            existing_users = supabase.auth.admin.list_users()
-            for u in existing_users:
-                if u.email == request.email:
-                    raise HTTPException(
-                        status_code=status.HTTP_409_CONFLICT,
-                        detail="이미 가입된 이메일입니다. 로그인을 시도해 주세요.",
-                    )
-        except HTTPException:
-            raise
-        except Exception:
-            pass  # auth 조회 실패 시 계속 진행
-
-        # 3) Supabase Auth로 사용자 생성 (anon 클라이언트 사용)
+        # 2) Supabase Auth로 사용자 생성 (anon 클라이언트 사용)
+        # H-03: auth.users 전체 순회 제거 — sign_up 자체가 중복 이메일 시 에러 반환
         auth_response = supabase_anon.auth.sign_up(
             {
                 "email": request.email,
@@ -99,7 +86,7 @@ async def signup(
 
         user_id = auth_response.user.id
 
-        # 4) 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
+        # 3) 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
         try:
             supabase.auth.admin.update_user_by_id(
                 user_id, {"email_confirm": True}
@@ -107,7 +94,8 @@ async def signup(
         except Exception:
             pass  # 이미 확인된 경우 무시
 
-        # 5) 프로필 테이블에 추가 정보 저장 (제약 조건 위반 처리)
+        # 4) 프로필 테이블에 추가 정보 저장
+        # H-04: 실패 시 auth 계정 롤백
         profile_data = {
             "id": user_id,
             "email": request.email,
@@ -117,6 +105,11 @@ async def signup(
         try:
             profile_response = supabase.table("profiles").insert(profile_data).execute()
         except Exception as insert_err:
+            # 프로필 INSERT 실패 → auth 계정 롤백
+            try:
+                supabase.auth.admin.delete_user(user_id)
+            except Exception:
+                pass  # 롤백 실패는 무시
             err_msg = str(insert_err).lower()
             if "duplicate" in err_msg or "unique" in err_msg or "23505" in err_msg:
                 raise HTTPException(
@@ -126,6 +119,11 @@ async def signup(
             raise
 
         if not profile_response.data:
+            # 빈 응답 → auth 계정 롤백
+            try:
+                supabase.auth.admin.delete_user(user_id)
+            except Exception:
+                pass
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="프로필 생성에 실패했습니다.",

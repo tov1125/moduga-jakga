@@ -89,41 +89,76 @@ export function useSTT(): UseSTTReturn {
       const ws = new WebSocket(`${WS_URL}/stt/stream`);
       wsRef.current = ws;
 
+      // C-02: 핸드셰이크 상태 추적 (auth → config → streaming)
+      let handshakePhase: "auth" | "config" | "streaming" = "auth";
+
       ws.onopen = () => {
-        // Send auth token if available
+        // 1단계: 인증 토큰 전송 (BE 프로토콜: { token })
         const token =
           typeof window !== "undefined"
             ? localStorage.getItem("access_token")
             : null;
         if (token) {
-          ws.send(JSON.stringify({ type: "auth", token }));
+          ws.send(JSON.stringify({ token }));
         }
-
-        // Send config (language)
-        ws.send(JSON.stringify({ type: "config", language: "ko" }));
-
-        voiceCtx?.setSttState("recording");
-        announceAssertive("녹음을 시작합니다");
-
-        // Start recording
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: "audio/webm;codecs=opus",
-        });
-        mediaRecorderRef.current = mediaRecorder;
-
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-            ws.send(event.data);
-          }
-        };
-
-        mediaRecorder.start(250); // Send chunks every 250ms
       };
 
       ws.onmessage = (event) => {
         try {
-          const result: STTResult = JSON.parse(event.data);
-          if (result.isFinal) {
+          const data = JSON.parse(event.data);
+
+          // 핸드셰이크: 인증 응답 처리
+          if (handshakePhase === "auth") {
+            if (data.error) {
+              setError("음성 인식 인증에 실패했습니다");
+              voiceCtx?.setSttState("error");
+              announceAssertive("음성 인식 인증에 실패했습니다");
+              ws.close();
+              return;
+            }
+            // 인증 성공 → 설정 전송 (C-02: 언어 코드 ko-KR 통일)
+            handshakePhase = "config";
+            ws.send(JSON.stringify({ language: "ko-KR" }));
+            return;
+          }
+
+          if (handshakePhase === "config") {
+            // 설정 확인 응답 → 스트리밍 시작
+            handshakePhase = "streaming";
+            voiceCtx?.setSttState("recording");
+            announceAssertive("녹음을 시작합니다");
+
+            // H-05: PCM 16bit 우선, 미지원 시 webm/opus 폴백
+            let mediaRecorder: MediaRecorder;
+            const pcmMime = "audio/webm;codecs=pcm";
+            if (MediaRecorder.isTypeSupported(pcmMime)) {
+              mediaRecorder = new MediaRecorder(stream, { mimeType: pcmMime });
+            } else {
+              mediaRecorder = new MediaRecorder(stream, {
+                mimeType: "audio/webm;codecs=opus",
+              });
+            }
+            mediaRecorderRef.current = mediaRecorder;
+
+            mediaRecorder.ondataavailable = (ev) => {
+              if (ev.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+                ws.send(ev.data);
+              }
+            };
+
+            mediaRecorder.start(250);
+            return;
+          }
+
+          // 스트리밍 단계: STT 결과 처리
+          if (data.error) {
+            setError(data.error);
+            return;
+          }
+
+          // C-01: is_final (snake_case — BE와 통일)
+          const result = data as STTResult;
+          if (result.is_final) {
             setTranscript((prev) => {
               const updated = prev ? `${prev} ${result.text}` : result.text;
               voiceCtx?.setTranscript(updated);

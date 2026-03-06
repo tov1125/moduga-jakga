@@ -3,6 +3,7 @@
 도서 내보내기(DOCX, PDF, EPUB) 생성, 상태 조회, 다운로드를 처리합니다.
 """
 
+import os
 import uuid
 from typing import Any
 
@@ -175,6 +176,13 @@ async def download_export(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="내보내기 파일을 찾을 수 없습니다.",
+        )
+
+    # H-08: 서버에 파일이 실제로 존재하는지 확인
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="내보내기 파일이 서버에서 삭제되었습니다. 다시 내보내기를 실행해 주세요.",
         )
 
     # MIME 타입 결정

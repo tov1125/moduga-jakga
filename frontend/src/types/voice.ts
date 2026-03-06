@@ -26,12 +26,11 @@ export interface VoiceCommand {
   confidence: number;
 }
 
-/** STT transcription result */
+/** STT transcription result (matches BE snake_case: is_final) */
 export interface STTResult {
   text: string;
-  isFinal: boolean;
-  confidence: number;
-  timestamp: number;
+  is_final: boolean;
+  segments?: Array<{ start: number; end: number; text: string }>;
 }
 
 /** TTS configuration */

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { CoverDesigner } from "@/components/book/CoverDesigner";
 import { Button } from "@/components/ui/Button";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
+import { useSupabase } from "@/hooks/useSupabase";
 import { books as booksApi, design as designApi } from "@/lib/api";
 import type { Book } from "@/types/book";
 import Link from "next/link";
@@ -16,6 +17,7 @@ export default function DesignPage() {
   const params = useParams();
   const bookId = params.bookId as string;
   const { announcePolite, announceAssertive } = useAnnouncer();
+  const { user } = useSupabase();
 
   const [book, setBook] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,7 +94,7 @@ export default function DesignPage() {
       <section className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
         <CoverDesigner
           bookTitle={book?.title || ""}
-          authorName=""
+          authorName={user?.display_name || ""}
           bookGenre={book?.genre}
           currentCoverUrl={undefined}
         />

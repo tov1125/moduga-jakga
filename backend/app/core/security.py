@@ -12,7 +12,7 @@ from jose import JWTError, jwt
 from supabase import Client
 
 from app.core.config import Settings, get_settings
-from app.core.database import get_supabase
+from app.core.database import get_supabase_admin
 
 # Bearer 토큰 스키마
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -85,7 +85,7 @@ def verify_token(token: str, settings: Settings) -> dict[str, Any]:
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     settings: Settings = Depends(get_settings),
-    supabase: Client = Depends(get_supabase),
+    supabase: Client = Depends(get_supabase_admin),
 ) -> dict[str, Any]:
     """
     현재 인증된 사용자 정보 반환 (FastAPI 의존성)

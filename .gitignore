@@ -44,3 +44,10 @@ exports/
 **/.claude/agent-memory/
 docs/.pdca-snapshots/
 docs/.bkit-memory.json
+
+# Playwright MCP
+.playwright-mcp/
+
+# Coverage & Build cache
+frontend/coverage/
+frontend/tsconfig.tsbuildinfo

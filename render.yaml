@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: moduga-jakga-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: singapore
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: CLOVA_SPEECH_SECRET
+        sync: false
+      - key: CLOVA_SPEECH_INVOKE_URL
+        sync: false
+      - key: CLOVA_VOICE_CLIENT_ID
+        sync: false
+      - key: CLOVA_VOICE_CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
