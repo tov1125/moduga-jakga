@@ -8,9 +8,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 
-from app.api.deps import get_current_user, get_supabase
+from app.api.deps import get_current_user, get_supabase, get_supabase_anon
 from app.core.config import Settings, get_settings
-from app.core.database import get_supabase_admin
 from app.core.security import create_access_token
 from app.schemas.auth import (
     LoginRequest,
@@ -47,8 +46,8 @@ def _build_user_response(profile: dict[str, Any]) -> UserResponse:
 )
 async def signup(
     request: SignUpRequest,
+    supabase_anon: Client = Depends(get_supabase_anon),
     supabase: Client = Depends(get_supabase),
-    admin_client: Client = Depends(get_supabase_admin),
     settings: Settings = Depends(get_settings),
 ) -> UserResponse:
     """
@@ -59,7 +58,7 @@ async def signup(
     try:
         # 1) profiles 테이블에서 이메일 중복 확인
         existing_profile = (
-            admin_client.table("profiles")
+            supabase.table("profiles")
             .select("id")
             .eq("email", request.email)
             .execute()
@@ -72,7 +71,7 @@ async def signup(
 
         # 2) auth.users에서도 이메일 중복 확인 (profiles 없이 auth만 있는 경우)
         try:
-            existing_users = admin_client.auth.admin.list_users()
+            existing_users = supabase.auth.admin.list_users()
             for u in existing_users:
                 if u.email == request.email:
                     raise HTTPException(
@@ -84,8 +83,8 @@ async def signup(
         except Exception:
             pass  # auth 조회 실패 시 계속 진행
 
-        # 3) Supabase Auth로 사용자 생성
-        auth_response = supabase.auth.sign_up(
+        # 3) Supabase Auth로 사용자 생성 (anon 클라이언트 사용)
+        auth_response = supabase_anon.auth.sign_up(
             {
                 "email": request.email,
                 "password": request.password,
@@ -102,7 +101,7 @@ async def signup(
 
         # 4) 이메일 자동 확인 (관리자 권한으로 즉시 활성화)
         try:
-            admin_client.auth.admin.update_user_by_id(
+            supabase.auth.admin.update_user_by_id(
                 user_id, {"email_confirm": True}
             )
         except Exception:
@@ -116,7 +115,7 @@ async def signup(
             "disability_type": request.disability_type.value,
         }
         try:
-            profile_response = admin_client.table("profiles").insert(profile_data).execute()
+            profile_response = supabase.table("profiles").insert(profile_data).execute()
         except Exception as insert_err:
             err_msg = str(insert_err).lower()
             if "duplicate" in err_msg or "unique" in err_msg or "23505" in err_msg:
@@ -151,6 +150,7 @@ async def signup(
 )
 async def login(
     request: LoginRequest,
+    supabase_anon: Client = Depends(get_supabase_anon),
     supabase: Client = Depends(get_supabase),
     settings: Settings = Depends(get_settings),
 ) -> LoginResponse:
@@ -159,8 +159,8 @@ async def login(
     인증 성공 시 사용자 정보와 JWT 액세스 토큰을 반환합니다.
     """
     try:
-        # Supabase Auth로 로그인
-        auth_response = supabase.auth.sign_in_with_password(
+        # Supabase Auth로 로그인 (anon 클라이언트)
+        auth_response = supabase_anon.auth.sign_in_with_password(
             {
                 "email": request.email,
                 "password": request.password,
@@ -175,7 +175,7 @@ async def login(
 
         user_id = auth_response.user.id
 
-        # 프로필 조회
+        # 프로필 조회 (admin 클라이언트 — RLS 우회)
         profile_resp = (
             supabase.table("profiles")
             .select("*")
