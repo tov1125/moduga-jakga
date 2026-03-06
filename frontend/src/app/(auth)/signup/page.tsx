@@ -91,6 +91,7 @@ export default function SignupPage() {
             : "회원가입에 실패했습니다. 다시 시도해 주세요.";
         setError(message);
         announceAssertive(message);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } finally {
         setIsLoading(false);
       }

@@ -56,8 +56,14 @@ async function apiFetch<T>(
     const errorBody = await response.json().catch(() => ({
       error: { code: "UNKNOWN", message: response.statusText },
     }));
+    const message =
+      errorBody.detail ||
+      errorBody.error?.message ||
+      errorBody.message ||
+      response.statusText ||
+      "요청 처리에 실패했습니다.";
     throw new ApiError(
-      errorBody.error?.message || response.statusText,
+      message,
       response.status,
       errorBody.error?.code || "UNKNOWN"
     );
